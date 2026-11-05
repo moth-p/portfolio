@@ -11,6 +11,21 @@
 
   --spacing-gutter: clamp(20px, 4vw, 64px);
   --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Work flow chart: arrows draw from their start point */
+  --animate-draw-down: draw-down 320ms var(--ease-soft) both;
+  --animate-draw-across: draw-across 320ms var(--ease-soft) both;
+
+  @keyframes draw-down {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  @keyframes draw-across {
+    from {
+      transform: scaleX(0);
+    }
+  }
 }
 
 @theme inline {
