@@ -5,6 +5,7 @@ import type { ReactNode } from "react"
 
 import { ThemeProvider } from "@/components/theme-provider"
 
+import "animate.css"
 import "./globals.css"
 
 // Clash Display from Fontshare (fontshare.com/fonts/clash-display)

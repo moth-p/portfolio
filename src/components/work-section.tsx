@@ -2,6 +2,7 @@
 
 import { useRef, type WheelEvent } from "react"
 
+import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
@@ -33,9 +34,9 @@ export function WorkSection({ projects }: { projects: Project[] }) {
       <div className="mb-[42px] grid grid-cols-12 items-end px-gutter">
         <div className="col-span-6 max-tab:col-span-8">
           <span className="mb-[18px] block text-[11px] tracking-[0.12em] text-muted-foreground">01</span>
-          <h2 id="work-title" className="font-serif text-[clamp(46px,5.5vw,78px)] leading-[0.95] font-normal max-phone:text-[44px]">
+          <FadeInUp as="h2" id="work-title" className="font-serif text-[clamp(46px,5.5vw,78px)] leading-[0.95] font-normal max-phone:text-[44px]">
             Selected work
-          </h2>
+          </FadeInUp>
         </div>
         <p className="col-start-8 col-end-11 mb-3 text-xs text-muted-foreground max-tab:hidden">Drag or scroll to explore</p>
         <div className="col-start-11 col-end-13 flex justify-end gap-2 max-tab:col-start-9">

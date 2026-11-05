@@ -1,3 +1,4 @@
+import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 
@@ -11,13 +12,14 @@ export function Hero() {
         <span>Independent designer</span>
         <span className="max-tab:hidden">Based in Amsterdam</span>
       </div>
-      <h1
+      <FadeInUp
+        as="h1"
         id="hero-title"
         className="z-[2] col-span-10 mt-[clamp(52px,8vh,100px)] mb-11 max-w-[900px] self-center text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium  max-tab:col-span-12 max-tab:mt-[70px] max-tab:self-start max-phone:text-[clamp(48px,15.5vw,70px)]"
       >
         Shape ideas into digital
         experiences.
-      </h1>
+      </FadeInUp>
       <div className="z-[2] col-span-6 flex items-end justify-between self-end pb-12 max-tab:col-span-11 max-phone:col-span-12 max-phone:gap-[25px]">
         <p className="max-w-[390px] text-[clamp(16px,1.4vw,20px)] leading-normal text-muted-foreground">
           Brand and product designer partnering with thoughtful people to make useful, lasting things.

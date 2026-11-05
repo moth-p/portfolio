@@ -1,4 +1,5 @@
 import { BrandMark } from "@/components/brand-mark"
+import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 
 const socials = [
@@ -11,11 +12,11 @@ export function SiteFooter() {
   return (
     <footer className="bg-footer text-footer-foreground">
       <div className="grid min-h-[500px] grid-cols-12 items-end px-gutter py-20 max-phone:min-h-[430px]">
-        <p className="col-span-8 text-[clamp(53px,7.5vw,110px)] leading-[0.86] tracking-[-0.06em] max-tab:col-span-12">
+        <FadeInUp as="p" className="col-span-8 text-[clamp(53px,7.5vw,110px)] leading-[0.86] tracking-[-0.06em] max-tab:col-span-12">
           Have something
           <br />
           <em className="font-serif font-normal text-highlight">good</em> in mind?
-        </p>
+        </FadeInUp>
         <a
           className="col-start-10 col-end-13 flex items-center justify-between border-y border-muted-foreground px-1 py-[18px] text-sm transition-colors duration-200 hover:text-highlight max-tab:col-start-7 max-tab:mt-[70px] max-phone:col-start-3"
           href="mailto:hello@averyvale.design"

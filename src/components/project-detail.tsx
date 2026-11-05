@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
+import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { projects, type Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
@@ -41,9 +42,9 @@ export function ProjectDetail({ project, next }: { project: Project; next: Proje
           </span>
           <span>{project.category}</span>
         </div>
-        <h1 className="col-start-3 col-end-12 font-serif text-[clamp(76px,10vw,150px)] leading-[0.78] font-normal tracking-[-0.055em] max-tab:col-span-12 max-tab:mt-[45px] max-phone:text-[68px] max-phone:leading-[0.88]">
+        <FadeInUp as="h1" className="col-start-3 col-end-12 font-serif text-[clamp(76px,10vw,150px)] leading-[0.78] font-normal tracking-[-0.055em] max-tab:col-span-12 max-tab:mt-[45px] max-phone:text-[68px] max-phone:leading-[0.88]">
           {project.title}
-        </h1>
+        </FadeInUp>
         <p className="col-start-8 col-end-13 mt-[50px] text-[clamp(17px,1.6vw,23px)] leading-[1.4] max-tab:col-start-4 max-phone:col-start-2 max-phone:mt-[45px]">
           {project.summary}
         </p>
@@ -83,9 +84,9 @@ export function ProjectDetail({ project, next }: { project: Project; next: Proje
         </div>
         <div className="col-start-6 col-end-13 max-tab:col-start-2 max-phone:col-start-1">
           <span className={cn(label, "text-muted-foreground")}>The idea</span>
-          <h2 className="mt-[27px] text-[clamp(34px,4.2vw,62px)] leading-[1.12] font-medium tracking-wide">
+          <FadeInUp as="h2" className="mt-[27px] text-[clamp(34px,4.2vw,62px)] leading-[1.12] font-medium tracking-wide">
             {project.description}
-          </h2>
+          </FadeInUp>
         </div>
       </section>
 
