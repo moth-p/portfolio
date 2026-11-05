@@ -1,37 +1,40 @@
-# figma-make-app
+# portfolio
 
-React + Vite + Tailwind CSS project running inside Figma Make.
+Next.js (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui portfolio site.
 
-## Development Server
+## Development
 
-A Vite development server is **already running** on `$PORT` (default 8443). You don't need to start it manually.
-
-- Preview URL: The user can access the running app through the preview panel
-- Hot reload: Changes to source files are reflected immediately
+- `pnpm dev` - Next.js dev server (Turbopack) on http://localhost:3000
+- `pnpm build` / `pnpm start` - production build and server
+- `pnpm lint` - ESLint (flat config, `eslint-config-next` core-web-vitals + typescript)
+- `pnpm typecheck` - `tsc --noEmit` (run `pnpm build` or `next typegen` first so route types like `PageProps` exist)
 
 ## Project Structure
 
-This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
-
-- `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
-- `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
-- `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
-- `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
-- `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
+- `src/app/layout.tsx` - Root layout: fonts (`next/font`), metadata, `ThemeProvider`
+- `src/app/page.tsx` - Home page (`/`)
+- `src/app/project/[id]/page.tsx` - Case study pages, statically generated from `src/data/projects.ts`; unknown ids 404
+- `src/app/globals.css` - Tailwind v4 import, theme tokens, custom utilities
+- `src/components/` - Page sections and shared pieces; `src/components/ui/` holds shadcn/ui components
+- `src/data/projects.ts` - Project content and lookup helpers
+- `src/lib/utils.ts` - `cn` class-name helper
+- `components.json` - shadcn/ui CLI config (`pnpm dlx shadcn@latest add <component>`)
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
-
-## Dependencies
-
-- Runtime: React 19 and React DOM 19
-- Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5.7, and `@vitejs/plugin-react`
-- Formatting: oxfmt
 
 ## Styling
 
-This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin configured in `vite.config.ts`. `src/index.css` imports Tailwind with `@import 'tailwindcss';`. Use Tailwind utility classes directly in JSX and put global CSS or Tailwind v4 theme customization in `src/index.css`. This scaffold does not need a Tailwind config file or PostCSS config.
+- Colors are CSS variables on `:root` / `[data-theme='dark']` in `globals.css`, exposed as Tailwind colors (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-section`, `bg-highlight`, `bg-footer`, ...). Use these instead of hex values.
+- Dark mode is driven by `next-themes` setting `data-theme` on `<html>`; the `dark:` variant targets it. The stored preference key is `portfolio-theme`.
+- The layout is desktop-first: use `max-tab:` (≤800px) and `max-phone:` (≤520px) for responsive overrides, and `px-gutter` / `mx-gutter` for the page side gutter. Sections use a 12-column grid (`grid grid-cols-12 px-gutter`).
+- Custom utilities in `globals.css`: `grid-lines` (column guide background), `marker` (highlighter stroke behind a word), `link-underline` (animated underline; add `data-active` to keep it shown).
+- Put global element styles inside `@layer base { ... }` so utilities still override them.
 
-`src/main.tsx` imports `src/index.css`, so global font wiring belongs in `src/index.css`. Keep CSS `@import` statements first, then add any `@font-face` rules and font-family defaults there.
+<!-- BEGIN:nextjs-agent-rules -->
 
-Tailwind emits utility classes in `@layer utilities`, and CSS outside any cascade layer overrides every layer regardless of specificity. Put global element styles, such as resets and defaults for `body`, headings, `button`, or `input`, inside `@layer base { ... }` so utility classes on those elements still apply. Tailwind's Preflight already applies `box-sizing: border-box`, removes default margins, and sets `font: inherit` on form controls, so do not repeat those rules.
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
