@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
+import { PET_HEIGHT, PET_WIDTH, PetSprite, PetStatus, usePetEnergy } from "@/components/pixel-pet"
 import { Projects, type ProjectsMotion } from "@/components/projects"
 import { Button } from "@/components/ui/button"
 import { Workflow } from "@/components/workflow"
@@ -45,6 +46,31 @@ const LANDING_HOLD_MS = 1000
 const LANDING_QUIET_MS = 200
 const LANDING_HOLD_MAX_MS = 2500
 
+// Entrance order: the title's lines fade in first, then each photo, then the pet — all with fadeInUp.
+const TITLE_MS = 1100
+const PHOTO_STAGGER_MS = 450
+const PET_DELAY_MS = TITLE_MS + 2 * PHOTO_STAGGER_MS
+
+// The pet walks from its hero spot to the right of each section title, and stays with the work flow.
+const PET_TITLE = { projects: "projects-title", flow: "workflow-title", after: "workflow-title" } as const
+// Next to a title the pet stands on the baseline and is about as tall as the capitals.
+const PET_TITLE_HEIGHT = 0.78
+const PET_TITLE_GAP = 0.3
+const PET_TITLE_DROP = 0.07
+
+// Position of an element inside an ancestor from layout offsets, so running entrance transforms don't skew it.
+function offsetWithin(element: HTMLElement, ancestor: HTMLElement) {
+  let x = 0
+  let y = 0
+  let node: HTMLElement | null = element
+  while (node && node !== ancestor) {
+    x += node.offsetLeft
+    y += node.offsetTop
+    node = node.offsetParent as HTMLElement | null
+  }
+  return { x, y }
+}
+
 // Square photos floating around the title, positioned by their centres (the `translate` property
 // leaves `transform` free for the float animation): one sitting on top of the first line, a little right of its
 // middle, and one further right and lower, beside the second line.
@@ -76,6 +102,11 @@ export function Hero() {
   const holdLimit = useRef(0)
   // False until the first sync, which only picks up a restored scroll position.
   const started = useRef(false)
+  const pet = usePetEnergy()
+  const stage = useRef<HTMLDivElement>(null)
+  const petSpot = useRef<HTMLDivElement>(null)
+  const petRef = useRef<HTMLDivElement>(null)
+  const petAt = useRef<{ x: number; y: number } | null>(null)
 
   const sync = useCallback(() => {
     if (performance.now() < holdUntil.current) {
@@ -148,6 +179,52 @@ export function Hero() {
     }
   }, [sync])
 
+  // Move the pet to the current phase's spot. The move itself is a CSS transition; while it runs the
+  // pet walks, facing the way it goes.
+  useEffect(() => {
+    const element = petRef.current
+    if (!element) return
+    const place = (animate: boolean) => {
+      const container = stage.current
+      const target = phase === "hero" ? petSpot.current : document.getElementById(PET_TITLE[phase])
+      if (!container || !target) return
+      const { x: left, y: top } = offsetWithin(target, container)
+      let x = left
+      let y = top
+      let scale = target.offsetWidth / PET_WIDTH
+      if (phase !== "hero") {
+        const height = target.offsetHeight
+        scale = (height * PET_TITLE_HEIGHT) / PET_HEIGHT
+        x = left + target.offsetWidth + height * PET_TITLE_GAP
+        y = top + height * (1 - PET_TITLE_DROP) - PET_HEIGHT * scale
+      }
+      const from = petAt.current
+      petAt.current = { x, y }
+      const moving = animate && from !== null && Math.hypot(x - from.x, y - from.y) > 4
+      element.style.transitionDuration = moving ? "" : "0ms"
+      element.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
+      if (moving) {
+        element.dataset.walking = ""
+        element.dataset.facing = x < from.x ? "left" : "right"
+      }
+    }
+    // Wait a frame so a freshly remounted panel has laid out its title.
+    const frame = requestAnimationFrame(() => place(true))
+    const onResize = () => place(false)
+    const onArrive = (event: TransitionEvent) => {
+      if (event.target !== element || event.propertyName !== "transform") return
+      delete element.dataset.walking
+      element.dataset.facing = "right"
+    }
+    window.addEventListener("resize", onResize)
+    element.addEventListener("transitionend", onArrive)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("resize", onResize)
+      element.removeEventListener("transitionend", onArrive)
+    }
+  }, [phase, projectsKey, flowKey])
+
   return (
     <div
       className="relative border-b border-border"
@@ -155,7 +232,7 @@ export function Hero() {
     >
       {/* Anchor for "Work" links: lands on the first project */}
       <div id="work" aria-hidden="true" className="absolute inset-x-0" style={{ top: `${projectScroll(0) * 100}svh` }} />
-      <div className="grid-lines sticky top-0 h-svh overflow-hidden">
+      <div ref={stage} className="grid-lines sticky top-0 h-svh overflow-hidden">
         <section
           aria-labelledby="hero-title"
           inert={phase !== "hero"}
@@ -170,17 +247,23 @@ export function Hero() {
             <span>Independent designer</span>
             <span className="max-tab:hidden">Based in Amsterdam</span>
           </div>
-          {heroPhotos.map((photo) => (
+          {heroPhotos.map((photo, index) => (
+            // The outer box plays the entrance, the inner one floats, so the two animations don't clash.
             <div
               key={photo.image}
               aria-hidden="true"
-              style={photo.style}
+              style={{ animationDelay: `${TITLE_MS + index * PHOTO_STAGGER_MS}ms` }}
               className={cn(
-                "absolute z-[1] aspect-square -translate-1/2 animate-float overflow-hidden bg-border motion-reduce:animate-none",
+                "animate__animated animate__fadeInUp absolute z-[1] aspect-square -translate-1/2",
                 photo.className,
               )}
             >
-              <Image src={photo.image} alt="" fill priority quality={85} sizes="135px" className="object-cover" />
+              <div
+                style={photo.style}
+                className="relative size-full animate-float overflow-hidden bg-border motion-reduce:animate-none"
+              >
+                <Image src={photo.image} alt="" fill priority quality={85} sizes="135px" className="object-cover" />
+              </div>
             </div>
           ))}
           {/* White text in difference mode reads as the inverse of whatever sits behind it: dark on the page, inverted over the photos */}
@@ -212,10 +295,20 @@ export function Hero() {
             className="absolute right-[clamp(18px,5vw,90px)] -bottom-20 aspect-square w-[clamp(230px,28vw,420px)] rounded-full border border-border max-tab:-right-[110px] max-tab:-bottom-10"
           >
             <div className="absolute top-1/2 -left-[12%] h-px w-[124%] -rotate-[35deg] bg-border" />
-            <div className="absolute top-[16%] right-[11%] size-6 rounded-full bg-highlight" />
-            <span className="absolute top-[30%] left-1/4 -rotate-[35deg] text-[9px] tracking-[0.14em] text-muted-foreground">
-              FORM / FUNCTION / FEELING
-            </span>
+          </div>
+          {/* Sits centred in the visible part of the circle (100px = half its width; no translate, since the pet is
+              placed from layout offsets); on tablet and phone it moves above the intro row.
+              The pet itself is drawn outside the panel (see below) so it can walk on; this keeps its spot. */}
+          <div
+            style={{ animationDelay: `${PET_DELAY_MS}ms` }}
+            className="animate__animated animate__fadeInUp absolute right-[calc(clamp(18px,5vw,90px)+clamp(115px,14vw,210px)-100px)] bottom-[clamp(24px,calc(14vw-110px),100px)] z-[2] flex flex-col items-center gap-5 max-tab:right-gutter max-tab:bottom-[150px] max-phone:bottom-[165px] max-phone:flex-row"
+          >
+            <div
+              ref={petSpot}
+              style={{ aspectRatio: `${PET_WIDTH} / ${PET_HEIGHT}` }}
+              className="w-[120px] max-phone:w-[80px]"
+            />
+            <PetStatus {...pet} />
           </div>
         </section>
 
@@ -237,6 +330,19 @@ export function Hero() {
         >
           <Workflow key={flowKey} steps={workflowSteps} />
         </section>
+
+        {/* Outside the hero it is always awake; it leaves with the work flow */}
+        <div
+          ref={petRef}
+          aria-hidden="true"
+          className="group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-transform duration-[1100ms] ease-in-out motion-reduce:transition-none"
+        >
+          <div style={{ animationDelay: `${PET_DELAY_MS}ms` }} className="animate__animated animate__fadeInUp">
+            <div className={cn((phase === "flow" || phase === "after") && flowMotion !== "enter" && panelClass[flowMotion])}>
+              <PetSprite mood={phase === "hero" ? pet.mood : "awake"} hopping={pet.hopping} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

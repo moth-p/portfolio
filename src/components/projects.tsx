@@ -40,7 +40,7 @@ export function Projects({
         <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">Selected work</span>
         <h2
           id="projects-title"
-          className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
+          className="w-fit text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
         >
           Projects
         </h2>

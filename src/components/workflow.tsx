@@ -82,7 +82,7 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
           <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">How I work</span>
           <h2
             id="workflow-title"
-            className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-tab:mb-6 max-phone:text-[clamp(40px,12vw,56px)]"
+            className="w-fit text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-tab:mb-6 max-phone:text-[clamp(40px,12vw,56px)]"
           >
             Work Flow
           </h2>

@@ -17,6 +17,13 @@
   --animate-draw-across: draw-across 320ms var(--ease-soft) both;
   /* Hero photos: slow bob up and down */
   --animate-float: float 6s ease-in-out infinite alternate;
+  /* Hero pixel pet */
+  --animate-pet-bob: pet-bob 1.2s steps(1) infinite;
+  --animate-pet-breathe: pet-breathe 3s steps(1) infinite;
+  --animate-pet-blink: pet-blink 4s steps(1) infinite;
+  --animate-pet-hop: pet-hop 350ms steps(3) 2;
+  --animate-pet-z: pet-z 2s ease-out infinite;
+  --animate-pet-walk: pet-walk 320ms steps(1) infinite;
 
   @keyframes float {
     from {
@@ -24,6 +31,51 @@
     }
     to {
       transform: translateY(10px);
+    }
+  }
+
+  @keyframes pet-bob {
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  @keyframes pet-breathe {
+    50% {
+      transform: translateY(2.5px);
+    }
+  }
+  @keyframes pet-blink {
+    94% {
+      transform: scaleY(0.2);
+    }
+  }
+  @keyframes pet-hop {
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+  @keyframes pet-walk {
+    25% {
+      transform: translateY(-4px) rotate(-5deg);
+    }
+    50% {
+      transform: translateY(0);
+    }
+    75% {
+      transform: translateY(-4px) rotate(5deg);
+    }
+  }
+  @keyframes pet-z {
+    from {
+      opacity: 0;
+      transform: translate(0, 4px);
+    }
+    40% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      transform: translate(8px, -10px);
     }
   }
 
