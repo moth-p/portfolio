@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { FadeInUp } from "@/components/fade-in-up"
@@ -43,6 +44,22 @@ const projectScroll = (index: number) => SWITCH_AT + (index + 0.5) * PROJECT_STE
 const LANDING_HOLD_MS = 1000
 const LANDING_QUIET_MS = 200
 const LANDING_HOLD_MAX_MS = 2500
+
+// Square photos floating around the title, positioned by their centres (the `translate` property
+// leaves `transform` free for the float animation): one sitting on top of the first line, a little right of its
+// middle, and one further right and lower, beside the second line.
+const heroPhotos = [
+  {
+    image: projects[0].image,
+    className: "top-[19%] left-[26%] w-[clamp(75px,9vw,135px)] max-tab:left-[60%]",
+    style: undefined,
+  },
+  {
+    image: projects[2].image,
+    className: "top-[47%] left-[53%] w-[clamp(55px,6vw,95px)] max-tab:left-[78%] max-phone:top-[41%] max-phone:left-[86%]",
+    style: { animationDelay: "-3s", animationDuration: "7s" },
+  },
+]
 
 export function Hero() {
   const [phase, setPhase] = useState<Phase>("hero")
@@ -143,7 +160,9 @@ export function Hero() {
           aria-labelledby="hero-title"
           inert={phase !== "hero"}
           className={cn(
-            "absolute inset-x-0 top-0 grid h-[calc(100svh-88px)] overflow-hidden grid-cols-12 px-gutter max-phone:h-[calc(100svh-72px)]",
+            // Isolated with its own background so the title's difference blend has the same backdrop
+            // while the panel fades in and out.
+            "grid-lines absolute inset-x-0 top-0 isolate grid h-[calc(100svh-88px)] overflow-hidden grid-cols-12 bg-background px-gutter transition-colors duration-[280ms] max-phone:h-[calc(100svh-72px)]",
             panelClass[heroMotion],
           )}
         >
@@ -151,10 +170,24 @@ export function Hero() {
             <span>Independent designer</span>
             <span className="max-tab:hidden">Based in Amsterdam</span>
           </div>
+          {heroPhotos.map((photo) => (
+            <div
+              key={photo.image}
+              aria-hidden="true"
+              style={photo.style}
+              className={cn(
+                "absolute z-[1] aspect-square -translate-1/2 animate-float overflow-hidden bg-border motion-reduce:animate-none",
+                photo.className,
+              )}
+            >
+              <Image src={photo.image} alt="" fill priority quality={85} sizes="135px" className="object-cover" />
+            </div>
+          ))}
+          {/* White text in difference mode reads as the inverse of whatever sits behind it: dark on the page, inverted over the photos */}
           <FadeInUp
             as="h1"
             id="hero-title"
-            className="z-[2] col-span-10 mt-[clamp(52px,8vh,100px)] mb-11 max-w-[900px] self-center text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium  max-tab:col-span-12 max-tab:mt-[70px] max-tab:self-start max-phone:text-[clamp(48px,15.5vw,70px)]"
+            className="z-[2] col-span-10 mt-[clamp(52px,8vh,100px)] mb-11 max-w-[900px] self-center text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium text-white mix-blend-difference max-tab:col-span-12 max-tab:mt-[70px] max-tab:self-start max-tab:text-[clamp(58px,10.5vw,84px)] max-phone:text-[clamp(40px,13vw,68px)]"
           >
             Shape ideas into digital
             experiences.

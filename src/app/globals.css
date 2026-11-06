@@ -15,6 +15,17 @@
   /* Work flow chart: arrows draw from their start point */
   --animate-draw-down: draw-down 320ms var(--ease-soft) both;
   --animate-draw-across: draw-across 320ms var(--ease-soft) both;
+  /* Hero photos: slow bob up and down */
+  --animate-float: float 6s ease-in-out infinite alternate;
+
+  @keyframes float {
+    from {
+      transform: translateY(-10px);
+    }
+    to {
+      transform: translateY(10px);
+    }
+  }
 
   @keyframes draw-down {
     from {

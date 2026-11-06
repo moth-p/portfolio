@@ -76,8 +76,8 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
   const [activeId, setActiveId] = useState(steps[0]?.id ?? "")
 
   return (
-    <div className="grid h-full grid-cols-12 px-gutter">
-      <div className="col-span-6 flex h-svh flex-col pt-[clamp(36px,9vh,110px)] pr-[clamp(20px,3vw,48px)] max-tab:col-span-12 max-tab:pt-[clamp(28px,6vh,60px)] max-tab:pr-0">
+    <div className="grid h-full grid-cols-12 px-gutter max-tab:flex max-tab:h-svh max-tab:flex-col">
+      <div className="col-span-6 flex h-svh flex-col pt-[clamp(36px,9vh,110px)] pr-[clamp(20px,3vw,48px)] max-tab:h-auto max-tab:min-h-0 max-tab:flex-1 max-tab:pt-[clamp(28px,6vh,60px)] max-tab:pr-0">
         <div className={enter}>
           <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">How I work</span>
           <h2
@@ -88,7 +88,7 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
           </h2>
         </div>
 
-        <div className="flex flex-1 items-center justify-center pb-[clamp(24px,5vh,56px)]">
+        <div className="flex flex-1 items-center justify-center pb-[clamp(24px,5vh,56px)] max-tab:pb-[clamp(16px,3vh,28px)]">
           <ol aria-label="Work flow steps" className="flex w-full max-w-[500px] flex-col items-center">
             {linear.map((step, index) => (
               <li key={step.id} className="flex w-full flex-col items-center">
@@ -124,7 +124,10 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
         </div>
       </div>
 
-      {/* Full-height accordion: hovering a slide unfolds it, and the open step grows to fill the remaining space */}
+      {/*
+        Full-height accordion: hovering a slide unfolds it, and the open step grows to fill the remaining space.
+        Tablet/phone: only the open step's details show under the chart; tapping a chart node switches it.
+      */}
       <Accordion.Root
         type="single"
         value={activeId}
@@ -133,7 +136,7 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
           if (value) setActiveId(value)
         }}
         className={cn(
-          "col-start-7 col-end-13 flex h-svh flex-col border-l border-border max-tab:col-span-12 max-tab:h-auto max-tab:border-t max-tab:border-l-0",
+          "col-start-7 col-end-13 flex h-svh flex-col border-l border-border max-tab:h-auto max-tab:flex-none max-tab:border-t max-tab:border-l-0",
           "animate__animated animate__fadeInUp",
         )}
       >
@@ -142,9 +145,9 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
             key={step.id}
             value={step.id}
             onMouseEnter={() => setActiveId(step.id)}
-            className="flex min-h-0 grow-0 cursor-pointer flex-col overflow-hidden border-b border-border transition-[flex-grow] duration-500 ease-soft last:border-b-0 data-[state=open]:grow max-tab:last:border-b max-tab:data-[state=open]:grow-0"
+            className="flex min-h-0 grow-0 cursor-pointer flex-col overflow-hidden border-b border-border transition-[flex-grow] duration-500 ease-soft last:border-b-0 data-[state=open]:grow max-tab:border-b-0 max-tab:data-[state=closed]:hidden max-tab:data-[state=open]:grow-0"
           >
-            <Accordion.Header>
+            <Accordion.Header className="max-tab:sr-only">
               <Accordion.Trigger className="group flex w-full cursor-pointer items-center gap-4 px-[clamp(20px,2.6vw,44px)] py-[clamp(10px,1.9vh,18px)] text-left text-[clamp(18px,1.75vw,26px)] transition-colors data-[state=closed]:text-muted-foreground data-[state=closed]:hover:text-foreground max-tab:px-0">
                 <span className="w-[30px] flex-none text-[11px] tracking-[0.08em] tabular-nums">{step.index}</span>
                 <span className="flex-1">{step.title}</span>
@@ -154,8 +157,8 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
                 </span>
               </Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className="px-[clamp(20px,2.6vw,44px)] pb-[clamp(14px,2.4vh,28px)] data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:duration-500 max-tab:px-0">
-              <div className="pl-[46px] max-phone:pl-0">
+            <Accordion.Content className="px-[clamp(20px,2.6vw,44px)] pb-[clamp(14px,2.4vh,28px)] data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:duration-500 max-tab:px-0 max-tab:pt-[clamp(14px,2.4vh,24px)] max-tab:pb-[clamp(24px,5vh,56px)]">
+              <div className="pl-[46px] max-tab:pl-0">
                 <p className="max-w-[560px] text-[clamp(16px,1.4vw,21px)] leading-relaxed text-muted-foreground">{step.brief}</p>
                 <p className="mt-4 text-[clamp(11px,0.9vw,13px)] tracking-[0.08em] uppercase">
                   <span className="text-muted-foreground">Output — </span>

@@ -116,7 +116,7 @@ export function ProjectDetail({ project, next }: { project: Project; next: Proje
         <strong className="col-start-3 col-end-11 font-serif text-[clamp(45px,6vw,85px)] font-normal max-tab:col-start-4 max-phone:col-start-1">
           {next.title}
         </strong>
-        <span className="col-start-12 flex size-[54px] items-center justify-center rounded-full border border-border bg-background transition duration-[220ms] group-hover:translate-x-[5px] group-hover:bg-foreground group-hover:text-background">
+        <span className="col-start-12 flex size-[54px] max-phone:col-start-11 max-phone:col-end-13 max-phone:justify-self-end items-center justify-center rounded-full border border-border bg-background transition duration-[220ms] group-hover:translate-x-[5px] group-hover:bg-foreground group-hover:text-background">
           <ArrowIcon />
         </span>
       </Link>
