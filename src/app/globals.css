@@ -124,15 +124,15 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #efefef;
+  --background: #d9d8d5;
   --foreground: #2a2a2a;
   --muted-foreground: #787878;
-  --border: #cccccc;
+  --border: #b6b5b2;
   --secondary: #cccccc;
   --section: #cccccc;
   --highlight: #eee8d0;
   --footer: #2a2a2a;
-  --footer-foreground: #efefef;
+  --footer-foreground: #d9d8d5;
   --destructive: #c2410c;
   /* Fixed-ink colors used on the always-light highlight surfaces */
   --ink: #2a2a2a;
@@ -141,7 +141,7 @@
 
 [data-theme='dark'] {
   --background: #2a2a2a;
-  --foreground: #efefef;
+  --foreground: #d9d8d5;
   --muted-foreground: #cccccc;
   --border: #787878;
   --secondary: #787878;
@@ -176,7 +176,7 @@
   }
 
   ::selection {
-    color: var(--foreground);
+    color: var(--ink);
     background: var(--highlight);
   }
 }
