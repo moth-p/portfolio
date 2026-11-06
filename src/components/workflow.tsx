@@ -7,7 +7,7 @@ import type { WorkflowStep } from "@/data/workflow"
 import { cn } from "@/lib/utils"
 
 // Steps before this index form a single line; the rest branch off in parallel.
-const BRANCH_START = 5
+const BRANCH_START = 4
 
 // Entrance sequence: title, then the flow chart rows one by one, then the arrows draw one by one.
 const enter = "animate__animated animate__fadeInUp [--animate-duration:800ms]"

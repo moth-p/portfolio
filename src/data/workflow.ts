@@ -1,6 +1,6 @@
 export type WorkflowStep = {
   id: string
-  /** Label shown in the flow chart node, e.g. "05" or "6-1" */
+  /** Label shown in the flow chart node, e.g. "04" or "5-1" */
   index: string
   title: string
   brief: string
@@ -17,16 +17,8 @@ export const workflowSteps: WorkflowStep[] = [
     output: "Goals, audience, constraints, success metrics",
   },
   {
-    id: "competitive",
-    index: "02",
-    title: "Competitive Analysis",
-    brief:
-      "Study how existing products solve the same problem: where they shine, where users struggle and which gaps are worth owning.",
-    output: "Feature matrix, opportunity notes",
-  },
-  {
     id: "references",
-    index: "03",
+    index: "02",
     title: "References Collection",
     brief:
       "Gather visual, interaction and technical references into one board to set the tone and agree on direction before drawing anything.",
@@ -34,7 +26,7 @@ export const workflowSteps: WorkflowStep[] = [
   },
   {
     id: "prototype",
-    index: "04",
+    index: "03",
     title: "Prototype",
     brief:
       "Turn the direction into clickable flows. Testing early with real people exposes the weak spots while changes are still cheap.",
@@ -42,7 +34,7 @@ export const workflowSteps: WorkflowStep[] = [
   },
   {
     id: "mvp",
-    index: "05",
+    index: "04",
     title: "MVP",
     brief:
       "Cut the prototype down to the smallest version that delivers the core value, then define what ships first and what can wait.",
@@ -50,7 +42,7 @@ export const workflowSteps: WorkflowStep[] = [
   },
   {
     id: "tech-stack",
-    index: "6-1",
+    index: "5-1",
     title: "Tech Stack",
     brief:
       "Choose frameworks, services and tooling that fit the MVP's needs, the team's strengths and the room the product needs to grow.",
@@ -58,7 +50,7 @@ export const workflowSteps: WorkflowStep[] = [
   },
   {
     id: "implementation",
-    index: "6-2",
+    index: "5-2",
     title: "Implementation Plan",
     brief:
       "Break the MVP into milestones and tasks with clear owners and checkpoints, running alongside the stack decision so both inform each other.",
