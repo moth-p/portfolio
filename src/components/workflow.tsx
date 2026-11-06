@@ -19,7 +19,7 @@ function FlowNode({ step, compact = false }: { step: WorkflowStep; compact?: boo
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-center gap-3 rounded-full border border-foreground px-5 py-[clamp(8px,1.4vh,13px)] text-center text-[clamp(16px,1.45vw,21px)] leading-tight transition-colors duration-300 hover:border-ink hover:bg-highlight hover:text-ink",
+        "flex w-full items-center justify-center gap-3 rounded-full border border-ink bg-highlight px-5 py-[clamp(8px,1.4vh,13px)] text-center text-[clamp(16px,1.45vw,21px)] leading-tight text-ink",
         // Side-by-side branch nodes stack the index above the title to fit the half width.
         compact && "h-full flex-col gap-0.5 rounded-[28px] px-3 text-[clamp(15px,1.3vw,19px)]",
       )}
@@ -69,7 +69,7 @@ export function Workflow({ steps }: { steps: WorkflowStep[] }) {
         className="absolute inset-y-0 left-5/12 w-px origin-top animate-draw-down bg-border [animation-duration:800ms] motion-reduce:animate-none max-tab:hidden"
       />
       {/* The title sits centred over the steps, and the two are centred together in the screen height */}
-      <div className="col-start-6 col-end-13 flex h-svh flex-col items-center justify-center py-[clamp(24px,5vh,56px)] pl-[clamp(20px,3vw,48px)] max-tab:col-span-12 max-tab:pl-0">
+      <div className="col-start-6 col-end-13 flex h-svh flex-col items-center justify-center pt-[calc(var(--spacing-header)+clamp(16px,3vh,32px))] pb-[clamp(24px,5vh,56px)] pl-[clamp(20px,3vw,48px)] max-tab:col-span-12 max-tab:pl-0">
         <div style={titleDelay} className={enter}>
           <h2
             id="workflow-title"

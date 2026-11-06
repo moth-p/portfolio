@@ -101,7 +101,9 @@ const heroPhotos = [
 
 export function Hero() {
   const [phase, setPhase] = useState<Phase>("hero")
-  const [activeProject, setActiveProject] = useState(0)
+  // Scroll position through the project list, in projects: 0 has the first one open, 1.5 has the second one
+  // halfway over the third, and so on.
+  const [projectProgress, setProjectProgress] = useState(0)
   const [heroMotion, setHeroMotion] = useState<HeroMotion>("none")
   const [projectsMotion, setProjectsMotion] = useState<ProjectsMotion>("hidden")
   const [sloganMotion, setSloganMotion] = useState<SloganMotion>("hidden")
@@ -148,7 +150,7 @@ export function Hero() {
       holdLimit.current = performance.now() + LANDING_HOLD_MAX_MS
     }
     started.current = true
-    setActiveProject(Math.min(projects.length - 1, Math.max(0, Math.floor((scrolled - SWITCH_AT) / PROJECT_STEP))))
+    setProjectProgress(Math.min(projects.length - 1, Math.max(0, (scrolled - projectScroll(0)) / PROJECT_STEP)))
 
     const previous = currentPhase.current
     if (next === previous) return
@@ -284,7 +286,7 @@ export function Hero() {
           className={cn(
             // Isolated with its own background so the title's difference blend has the same backdrop
             // while the panel fades in and out.
-            "grid-lines absolute inset-x-0 top-0 isolate grid h-[calc(100svh-88px)] overflow-hidden grid-cols-12 bg-background px-gutter transition-colors duration-[280ms] max-phone:h-[calc(100svh-72px)]",
+            "grid-lines absolute inset-x-0 top-header bottom-0 isolate grid overflow-hidden grid-cols-12 bg-background px-gutter transition-colors duration-[280ms]",
             panelClass[heroMotion],
           )}
         >
@@ -362,7 +364,7 @@ export function Hero() {
           <Projects
             key={projectsKey}
             projects={projects}
-            activeIndex={activeProject}
+            progress={projectProgress}
             motion={projectsMotion}
             onSelect={selectProject}
           />

@@ -3,6 +3,7 @@
 import { Accordion } from "radix-ui"
 import Image from "next/image"
 import Link from "next/link"
+import { useLayoutEffect, useRef } from "react"
 
 import { ArrowIcon } from "@/components/icons"
 import type { Project } from "@/data/projects"
@@ -25,17 +26,45 @@ const slideDelay = (index: number) => ({ animationDelay: `${250 + index * 120}ms
 
 export function Projects({
   projects,
-  activeIndex,
+  progress,
   motion,
   onSelect,
 }: {
   projects: Project[]
-  activeIndex: number
+  progress: number
   motion: ProjectsMotion
   onSelect: (index: number) => void
 }) {
+  const root = useRef<HTMLDivElement>(null)
+  // The slide that is mostly open counts as the open one (for its state, focus and the trigger colours).
+  const activeIndex = Math.round(progress)
+
+  // Every slide's content is laid out at the open size, so a slide doesn't reflow while it folds or unfolds: the
+  // next slide's strip sweeps over the former one and covers it. The open size is what's left of the accordion
+  // after every strip (and the dividers between slides).
+  useLayoutEffect(() => {
+    const element = root.current
+    if (!element) return
+    const measure = () => {
+      const vertical = getComputedStyle(element).flexDirection === "column"
+      const items = Array.from(element.children) as HTMLElement[]
+      let open = vertical ? element.clientHeight : element.clientWidth
+      for (const item of items) {
+        const header = item.firstElementChild as HTMLElement
+        open -= vertical
+          ? item.offsetHeight - item.clientHeight + header.offsetHeight
+          : item.offsetWidth - item.clientWidth + header.offsetWidth
+      }
+      element.style.setProperty("--open-size", `${Math.max(0, open)}px`)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div className="flex h-svh flex-col px-gutter pt-[clamp(36px,9vh,110px)] pb-[clamp(24px,5vh,56px)] max-tab:pt-[clamp(28px,6vh,60px)]">
+    <div className="flex h-svh flex-col px-gutter pt-[calc(var(--spacing-header)+clamp(28px,7vh,90px))] pb-[clamp(24px,5vh,56px)] max-tab:pt-[calc(var(--spacing-header)+clamp(20px,4vh,44px))]">
       <div className={cn("mb-[clamp(20px,4vh,44px)]", motionClass[motion])}>
         <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">Selected work</span>
         <h2
@@ -47,11 +76,12 @@ export function Projects({
       </div>
 
       {/*
-        Scrolling unfolds one project at a time and folds the previous one.
+        Scrolling slides each project over the previous one, in step with the scroll.
         Desktop: side-by-side slides split by vertical lines, read left to right.
         Tablet/phone: stacked slides split by horizontal lines, read top to bottom.
       */}
       <Accordion.Root
+        ref={root}
         type="single"
         value={projects[activeIndex]?.id ?? ""}
         onValueChange={(value) => {
@@ -66,13 +96,17 @@ export function Projects({
       >
         {projects.map((project, index) => {
           const href = `/project/${project.id}`
+          const open = index === activeIndex
+          // How far this slide is unfolded, tied directly to the scroll: between two slides, the next one has
+          // covered the former by the fraction scrolled, and stops wherever the scroll stops.
+          const openness = Math.max(0, 1 - Math.abs(progress - index))
           return (
             <Accordion.Item
               key={project.id}
               value={project.id}
-              style={motion === "in-up" ? slideDelay(index) : undefined}
+              style={{ flexGrow: openness, ...(motion === "in-up" ? slideDelay(index) : undefined) }}
               className={cn(
-                "flex min-h-0 min-w-0 grow-0 overflow-hidden border-l border-border transition-[flex-grow] duration-500 ease-soft first:border-l-0 data-[state=open]:grow max-tab:flex-col max-tab:border-t max-tab:border-l-0 max-tab:first:border-t-0",
+                "flex min-h-0 min-w-0 overflow-hidden border-l border-border first:border-l-0 max-tab:flex-col max-tab:border-t max-tab:border-l-0 max-tab:first:border-t-0",
                 motion === "in-up" && motionClass[motion],
               )}
             >
@@ -82,34 +116,37 @@ export function Projects({
                   <span className="text-[10px] tracking-[0.08em] uppercase">{project.category}</span>
                 </Accordion.Trigger>
               </Accordion.Header>
-              <Accordion.Content className="flex min-h-0 min-w-0 flex-1 gap-[clamp(20px,2.6vw,44px)] py-[clamp(16px,2.6vh,28px)] pr-[clamp(16px,2.6vw,44px)] data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:duration-500 max-tab:flex-col max-tab:gap-4 max-tab:pt-0 max-tab:pr-0">
-                <Link
-                  href={href}
-                  aria-label={`View ${project.title} case study`}
-                  className="group/image relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-[26px] bg-border max-phone:rounded-[18px]"
-                >
-                  <Image
-                    src={project.image}
-                    alt=""
-                    fill
-                    quality={85}
-                    sizes="(max-width: 800px) 100vw, 60vw"
-                    className="object-cover saturate-[0.62] transition-[filter,scale] duration-[550ms,700ms] ease-[ease,var(--ease-soft)] group-hover/image:scale-[1.035] group-hover/image:saturate-[0.95]"
-                  />
-                </Link>
-                <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">
-                  <span className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
-                    {project.category} · {project.year}
-                  </span>
-                  <p className="mt-3 text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:mt-1.5 max-tab:text-[15px]">
-                    {project.summary}
-                  </p>
+              {/* Kept mounted so a folding slide stays in place while it's covered; the inner box holds the open size */}
+              <Accordion.Content forceMount inert={!open} className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+                <div className="absolute inset-y-0 left-0 flex w-(--open-size) gap-[clamp(20px,2.6vw,44px)] py-[clamp(16px,2.6vh,28px)] pr-[clamp(16px,2.6vw,44px)] max-tab:inset-x-0 max-tab:top-0 max-tab:bottom-auto max-tab:h-(--open-size) max-tab:w-auto max-tab:flex-col max-tab:gap-4 max-tab:pt-0 max-tab:pr-0">
                   <Link
                     href={href}
-                    className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[11px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background max-tab:mt-3"
+                    aria-label={`View ${project.title} case study`}
+                    className="group/image relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-[26px] bg-border max-phone:rounded-[18px]"
                   >
-                    View project <ArrowIcon className="w-4" />
+                    <Image
+                      src={project.image}
+                      alt=""
+                      fill
+                      quality={85}
+                      sizes="(max-width: 800px) 100vw, 60vw"
+                      className="object-cover saturate-[0.62] transition-[filter,scale] duration-[550ms,700ms] ease-[ease,var(--ease-soft)] group-hover/image:scale-[1.035] group-hover/image:saturate-[0.95]"
+                    />
                   </Link>
+                  <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">
+                    <span className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
+                      {project.category} · {project.year}
+                    </span>
+                    <p className="mt-3 text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:mt-1.5 max-tab:text-[15px]">
+                      {project.summary}
+                    </p>
+                    <Link
+                      href={href}
+                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[11px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background max-tab:mt-3"
+                    >
+                      View project <ArrowIcon className="w-4" />
+                    </Link>
+                  </div>
                 </div>
               </Accordion.Content>
             </Accordion.Item>

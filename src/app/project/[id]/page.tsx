@@ -24,7 +24,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[id]">
   if (!project) notFound()
 
   return (
-    <main>
+    <main className="pt-header">
       <SiteHeader detail />
       <ProjectDetail project={project} next={getNextProject(id)} />
       <SiteFooter />
