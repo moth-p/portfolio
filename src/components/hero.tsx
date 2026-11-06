@@ -7,6 +7,7 @@ import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { PET_HEIGHT, PET_WIDTH, PetSprite, PetStatus, usePetEnergy } from "@/components/pixel-pet"
 import { Projects, type ProjectsMotion } from "@/components/projects"
+import { SLOGAN_SPLIT, Slogan, type SloganMotion } from "@/components/slogan"
 import { Button } from "@/components/ui/button"
 import { Workflow } from "@/components/workflow"
 import { projects } from "@/data/projects"
@@ -15,14 +16,16 @@ import { cn } from "@/lib/utils"
 
 // Scroll distances in viewport heights. The hero hands over to the project list once SWITCH_AT has been scrolled…
 const SWITCH_AT = 0.12
-// …which unfolds one project per PROJECT_STEP…
+// …which unfolds one project per PROJECT_STEP, then the slogan holds for SLOGAN_STEP while its cube solves itself…
 const PROJECT_STEP = 0.5
-const FLOW_AT = SWITCH_AT + projects.length * PROJECT_STEP
+const SLOGAN_AT = SWITCH_AT + projects.length * PROJECT_STEP
+const SLOGAN_STEP = 1
+const FLOW_AT = SLOGAN_AT + SLOGAN_STEP
 // …then the work flow stays pinned until it leaves (fading out upwards) at LEAVE_AT.
 const LEAVE_AT = FLOW_AT + 1.08
 const TRACK = LEAVE_AT + 0.3
 
-const PHASES = ["hero", "projects", "flow", "after"] as const
+const PHASES = ["hero", "projects", "slogan", "flow", "after"] as const
 type Phase = (typeof PHASES)[number]
 
 type HeroMotion = "none" | "out-up" | "in-down"
@@ -51,8 +54,17 @@ const TITLE_MS = 1100
 const PHOTO_STAGGER_MS = 450
 const PET_DELAY_MS = TITLE_MS + 2 * PHOTO_STAGGER_MS
 
-// The pet walks from its hero spot to the right of each section title, and stays with the work flow.
-const PET_TITLE = { projects: "projects-title", flow: "workflow-title", after: "workflow-title" } as const
+// The pet walks from its hero spot to the right of each section title, and in the slogan to its own spot beside
+// the cube. On desktop it stays on that spot while the slogan moves aside for the work flow; on tablet and phone
+// the slogan leaves, so the pet goes on to the work flow title.
+const PET_TITLE = {
+  projects: "projects-title",
+  slogan: "slogan-pet-spot",
+  flow: "workflow-title",
+  after: "workflow-title",
+} as const
+const SLOGAN_PET_SPOT = "slogan-pet-spot"
+const DESKTOP_QUERY = "(min-width: 801px)"
 // Next to a title the pet stands on the baseline and is about as tall as the capitals.
 const PET_TITLE_HEIGHT = 0.78
 const PET_TITLE_GAP = 0.3
@@ -92,9 +104,11 @@ export function Hero() {
   const [activeProject, setActiveProject] = useState(0)
   const [heroMotion, setHeroMotion] = useState<HeroMotion>("none")
   const [projectsMotion, setProjectsMotion] = useState<ProjectsMotion>("hidden")
+  const [sloganMotion, setSloganMotion] = useState<SloganMotion>("hidden")
   const [flowMotion, setFlowMotion] = useState<FlowMotion>("hidden")
-  // Bumped each time a panel is entered from above so its entrance animation replays.
+  // Bumped each time a panel is entered from above so its entrance animation (or the cube's solve) replays.
   const [projectsKey, setProjectsKey] = useState(0)
+  const [sloganKey, setSloganKey] = useState(0)
   const [flowKey, setFlowKey] = useState(0)
   const currentPhase = useRef<Phase>("hero")
   // Until this time the scroll is held on the first project (see LANDING_HOLD_MS).
@@ -116,7 +130,15 @@ export function Hero() {
     // The hero opens the page, so the page scroll is how far into the track we are.
     let scrolled = window.scrollY / window.innerHeight
     const next: Phase =
-      scrolled > LEAVE_AT ? "after" : scrolled > FLOW_AT ? "flow" : scrolled > SWITCH_AT ? "projects" : "hero"
+      scrolled > LEAVE_AT
+        ? "after"
+        : scrolled > FLOW_AT
+          ? "flow"
+          : scrolled > SLOGAN_AT
+            ? "slogan"
+            : scrolled > SWITCH_AT
+              ? "projects"
+              : "hero"
     // Scrolling down from the hero always lands on the first project and holds there while the
     // slides fade in, so a fast swipe can't carry past them.
     if (started.current && currentPhase.current === "hero" && next === "projects") {
@@ -142,6 +164,15 @@ export function Hero() {
       if (forward) setProjectsKey((key) => key + 1)
     } else if (previous === "projects") {
       setProjectsMotion(forward ? "out-up" : "out-down")
+    }
+
+    // The slogan stays on screen with the work flow, moved aside to the left half (see Slogan's `split`).
+    const sloganShown = (value: Phase) => value === "slogan" || value === "flow"
+    if (sloganShown(next) && !sloganShown(previous)) {
+      setSloganMotion(forward ? "in-up" : "in-down")
+      if (forward) setSloganKey((key) => key + 1)
+    } else if (!sloganShown(next) && sloganShown(previous)) {
+      setSloganMotion(forward ? "out-up" : "out-down")
     }
 
     if (next === "flow") {
@@ -186,13 +217,27 @@ export function Hero() {
     if (!element) return
     const place = (animate: boolean) => {
       const container = stage.current
-      const target = phase === "hero" ? petSpot.current : document.getElementById(PET_TITLE[phase])
+      const split = (phase === "flow" || phase === "after") && window.matchMedia(DESKTOP_QUERY).matches
+      const target =
+        phase === "hero" ? petSpot.current : document.getElementById(split ? SLOGAN_PET_SPOT : PET_TITLE[phase])
       if (!container || !target) return
       const { x: left, y: top } = offsetWithin(target, container)
       let x = left
       let y = top
       let scale = target.offsetWidth / PET_WIDTH
-      if (phase !== "hero") {
+      if (split) {
+        // Layout offsets ignore the slogan's split move, so apply it here: scale about the slogan's centre,
+        // then shift left.
+        const slogan = document.getElementById("slogan-stage")
+        if (slogan) {
+          const { x: sloganLeft, y: sloganTop } = offsetWithin(slogan, container)
+          const centerX = sloganLeft + slogan.offsetWidth / 2
+          const centerY = sloganTop + slogan.offsetHeight / 2
+          x = centerX + (x - centerX) * SLOGAN_SPLIT.scale - slogan.offsetWidth * SLOGAN_SPLIT.shift
+          y = centerY + (y - centerY) * SLOGAN_SPLIT.scale
+          scale *= SLOGAN_SPLIT.scale
+        }
+      } else if (phase !== "hero" && target.id !== SLOGAN_PET_SPOT) {
         const height = target.offsetHeight
         scale = (height * PET_TITLE_HEIGHT) / PET_HEIGHT
         x = left + target.offsetWidth + height * PET_TITLE_GAP
@@ -323,6 +368,15 @@ export function Hero() {
           />
         </section>
 
+        <section aria-label="Solution Provider" inert={phase !== "slogan"} className="absolute inset-0">
+          <Slogan
+            motion={sloganMotion}
+            split={phase === "flow"}
+            active={phase === "slogan" || phase === "flow"}
+            playKey={sloganKey}
+          />
+        </section>
+
         <section
           aria-labelledby="workflow-title"
           inert={phase !== "flow"}
@@ -331,15 +385,23 @@ export function Hero() {
           <Workflow key={flowKey} steps={workflowSteps} />
         </section>
 
-        {/* Outside the hero it is always awake; it leaves with the work flow */}
+        {/* Outside the hero it is always awake; it leaves with the work flow. On desktop it fades out where the
+            slogan and the work flow share the screen (on tablet and phone it stays by the work flow title). */}
         <div
           ref={petRef}
           aria-hidden="true"
           className="group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-transform duration-[1100ms] ease-in-out motion-reduce:transition-none"
         >
           <div style={{ animationDelay: `${PET_DELAY_MS}ms` }} className="animate__animated animate__fadeInUp">
-            <div className={cn((phase === "flow" || phase === "after") && flowMotion !== "enter" && panelClass[flowMotion])}>
-              <PetSprite mood={phase === "hero" ? pet.mood : "awake"} hopping={pet.hopping} />
+            <div
+              className={cn(
+                "transition-opacity duration-500",
+                (phase === "flow" || phase === "after") && "tab:opacity-0",
+              )}
+            >
+              <div className={cn((phase === "flow" || phase === "after") && flowMotion !== "enter" && panelClass[flowMotion])}>
+                <PetSprite mood={phase === "hero" ? pet.mood : "awake"} hopping={pet.hopping} />
+              </div>
             </div>
           </div>
         </div>

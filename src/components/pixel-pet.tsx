@@ -80,9 +80,10 @@ const SPRITE = [
 ]
 
 const pixelFill: Record<string, string> = {
-  o: "fill-ink",
-  g: "fill-ink",
-  b: "fill-highlight",
+  // In dark mode the pet is drawn reversed: light outline, grip and eyes on a dark body.
+  o: "fill-ink dark:fill-foreground",
+  g: "fill-ink dark:fill-foreground",
+  b: "fill-highlight dark:fill-ink",
   // The sword sits on the page background, so it uses theme colours to stay visible in dark mode.
   m: "fill-muted-foreground",
   s: "fill-background",
@@ -110,7 +111,7 @@ export function PetSprite({ mood, hopping }: { mood: PetMood; hopping: boolean }
   return (
     <div className="relative group-data-[facing=left]:-scale-x-100">
       {mood === "asleep" && (
-        <span aria-hidden="true" className="absolute -top-4 left-[52%] text-[15px] text-foreground">
+        <span aria-hidden="true" className="absolute -top-10 left-[52%] text-[15px] text-foreground">
           <span className="absolute animate-pet-z motion-reduce:animate-none">z</span>
           <span className="absolute -top-3 left-3 animate-pet-z text-[19px] [animation-delay:-1s] motion-reduce:animate-none">
             Z
@@ -130,7 +131,7 @@ export function PetSprite({ mood, hopping }: { mood: PetMood; hopping: boolean }
         {spritePixels.map(({ x, y, fill }) => (
           <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className={fill} />
         ))}
-        <g className={cn("fill-ink", mood === "awake" && "animate-pet-blink [transform-box:fill-box] origin-center")}>
+        <g className={cn("fill-ink dark:fill-foreground", mood === "awake" && "animate-pet-blink [transform-box:fill-box] origin-center")}>
           {eyes[mood].map(([x, y]) => (
             <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} />
           ))}
