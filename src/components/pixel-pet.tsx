@@ -208,7 +208,7 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
         disabled={energy === 100}
         className="mt-1 flex w-fit items-center gap-2.5 self-center rounded-full border border-foreground px-[18px] py-2.5 text-[13px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background disabled:pointer-events-none disabled:opacity-40 max-phone:self-start"
       >
-        {mood === "asleep" ? "Wake & recharge" : "Recharge"}
+        Recharge
       </button>
     </div>
   )
