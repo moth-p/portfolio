@@ -4,55 +4,129 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
+import { Projects, type ProjectsMotion } from "@/components/projects"
 import { Button } from "@/components/ui/button"
 import { Workflow } from "@/components/workflow"
+import { projects } from "@/data/projects"
 import { workflowSteps } from "@/data/workflow"
 import { cn } from "@/lib/utils"
 
-// Scroll distances in viewport heights: the hero holds for INTRO, then the work flow stays pinned for HOLD.
-const INTRO = 0.5
-const HOLD = 1
-// The hero hands over to the work flow once this much has been scrolled…
+// Scroll distances in viewport heights. The hero hands over to the project list once SWITCH_AT has been scrolled…
 const SWITCH_AT = 0.12
-// …and the work flow leaves (fading out upwards) once this much has been scrolled.
-const LEAVE_AT = INTRO + HOLD * 0.7
+// …which unfolds one project per PROJECT_STEP…
+const PROJECT_STEP = 0.5
+const FLOW_AT = SWITCH_AT + projects.length * PROJECT_STEP
+// …then the work flow stays pinned until it leaves (fading out upwards) at LEAVE_AT.
+const LEAVE_AT = FLOW_AT + 1.08
+const TRACK = LEAVE_AT + 0.3
 
-type Phase = "hero" | "flow" | "after"
+const PHASES = ["hero", "projects", "flow", "after"] as const
+type Phase = (typeof PHASES)[number]
+
+type HeroMotion = "none" | "out-up" | "in-down"
+type FlowMotion = "hidden" | "enter" | "in-down" | "out-up" | "out-down"
+
+const panelClass: Record<HeroMotion | FlowMotion, string> = {
+  none: "",
+  hidden: "opacity-0",
+  // Entering from above, the work flow's parts run their own staged fade-ins (see Workflow).
+  enter: "",
+  "in-down": "animate__animated animate__fadeInDown",
+  "out-up": "animate__animated animate__fadeOutUp",
+  "out-down": "animate__animated animate__fadeOutDown",
+}
+
+// Scroll position (in viewport heights) that opens a given project.
+const projectScroll = (index: number) => SWITCH_AT + (index + 0.5) * PROJECT_STEP
+// After entering the list from the hero, the scroll stays on the first project for at least
+// LANDING_HOLD_MS, and longer while the swipe's wheel events keep coming (up to LANDING_HOLD_MAX_MS).
+const LANDING_HOLD_MS = 1000
+const LANDING_QUIET_MS = 200
+const LANDING_HOLD_MAX_MS = 2500
 
 export function Hero() {
   const [phase, setPhase] = useState<Phase>("hero")
-  // Which phase the work flow was entered from, to pick its entrance animation.
-  const [enteredFrom, setEnteredFrom] = useState<Phase>("hero")
-  const [hasLeft, setHasLeft] = useState(false)
-  // Bumped each time the work flow appears from the hero so its entrance animation replays.
-  const [playKey, setPlayKey] = useState(0)
+  const [activeProject, setActiveProject] = useState(0)
+  const [heroMotion, setHeroMotion] = useState<HeroMotion>("none")
+  const [projectsMotion, setProjectsMotion] = useState<ProjectsMotion>("hidden")
+  const [flowMotion, setFlowMotion] = useState<FlowMotion>("hidden")
+  // Bumped each time a panel is entered from above so its entrance animation replays.
+  const [projectsKey, setProjectsKey] = useState(0)
+  const [flowKey, setFlowKey] = useState(0)
   const currentPhase = useRef<Phase>("hero")
+  // Until this time the scroll is held on the first project (see LANDING_HOLD_MS).
+  const holdUntil = useRef(0)
+  const holdLimit = useRef(0)
+  // False until the first sync, which only picks up a restored scroll position.
+  const started = useRef(false)
 
   const sync = useCallback(() => {
+    if (performance.now() < holdUntil.current) {
+      window.scrollTo({ top: projectScroll(0) * window.innerHeight, behavior: "instant" })
+      return
+    }
     // The hero opens the page, so the page scroll is how far into the track we are.
-    const scrolled = window.scrollY / window.innerHeight
-    const next: Phase = scrolled > LEAVE_AT ? "after" : scrolled > SWITCH_AT ? "flow" : "hero"
+    let scrolled = window.scrollY / window.innerHeight
+    const next: Phase =
+      scrolled > LEAVE_AT ? "after" : scrolled > FLOW_AT ? "flow" : scrolled > SWITCH_AT ? "projects" : "hero"
+    // Scrolling down from the hero always lands on the first project and holds there while the
+    // slides fade in, so a fast swipe can't carry past them.
+    if (started.current && currentPhase.current === "hero" && next === "projects") {
+      scrolled = projectScroll(0)
+      window.scrollTo({ top: scrolled * window.innerHeight, behavior: "instant" })
+      holdUntil.current = performance.now() + LANDING_HOLD_MS
+      holdLimit.current = performance.now() + LANDING_HOLD_MAX_MS
+    }
+    started.current = true
+    setActiveProject(Math.min(projects.length - 1, Math.max(0, Math.floor((scrolled - SWITCH_AT) / PROJECT_STEP))))
+
     const previous = currentPhase.current
     if (next === previous) return
     currentPhase.current = next
     setPhase(next)
-    if (next !== "hero") setHasLeft(true)
+    const forward = PHASES.indexOf(next) > PHASES.indexOf(previous)
+
+    if (next === "hero") setHeroMotion("in-down")
+    else if (previous === "hero") setHeroMotion("out-up")
+
+    if (next === "projects") {
+      setProjectsMotion(forward ? "in-up" : "in-down")
+      if (forward) setProjectsKey((key) => key + 1)
+    } else if (previous === "projects") {
+      setProjectsMotion(forward ? "out-up" : "out-down")
+    }
+
     if (next === "flow") {
-      setEnteredFrom(previous)
-      if (previous === "hero") setPlayKey((key) => key + 1)
+      setFlowMotion(forward ? "enter" : "in-down")
+      if (forward) setFlowKey((key) => key + 1)
+    } else if (previous === "flow") {
+      setFlowMotion(forward ? "out-up" : "out-down")
     }
   }, [])
 
-  const showFlow = phase !== "hero"
+  const selectProject = useCallback((index: number) => {
+    window.scrollTo({ top: projectScroll(index) * window.innerHeight, behavior: "smooth" })
+  }, [])
 
   useEffect(() => {
     // Pick up a restored scroll position (e.g. after a reload mid-page).
     const frame = requestAnimationFrame(sync)
+    // Swallow wheel and touch scrolling (including trackpad momentum) while the first project is held.
+    const hold = (event: Event) => {
+      const now = performance.now()
+      if (now >= holdUntil.current) return
+      event.preventDefault()
+      holdUntil.current = Math.min(holdLimit.current, Math.max(holdUntil.current, now + LANDING_QUIET_MS))
+    }
     window.addEventListener("scroll", sync, { passive: true })
     window.addEventListener("resize", sync)
+    window.addEventListener("wheel", hold, { passive: false })
+    window.addEventListener("touchmove", hold, { passive: false })
     return () => {
       window.removeEventListener("scroll", sync)
       window.removeEventListener("resize", sync)
+      window.removeEventListener("wheel", hold)
+      window.removeEventListener("touchmove", hold)
       cancelAnimationFrame(frame)
     }
   }, [sync])
@@ -60,15 +134,17 @@ export function Hero() {
   return (
     <div
       className="relative border-b border-border"
-      style={{ height: `calc(100svh + ${(INTRO + HOLD) * 100}svh)` }}
+      style={{ height: `calc(100svh + ${TRACK * 100}svh)` }}
     >
+      {/* Anchor for "Work" links: lands on the first project */}
+      <div id="work" aria-hidden="true" className="absolute inset-x-0" style={{ top: `${projectScroll(0) * 100}svh` }} />
       <div className="grid-lines sticky top-0 h-svh overflow-hidden">
         <section
           aria-labelledby="hero-title"
-          inert={showFlow}
+          inert={phase !== "hero"}
           className={cn(
             "absolute inset-x-0 top-0 grid h-[calc(100svh-88px)] overflow-hidden grid-cols-12 px-gutter max-phone:h-[calc(100svh-72px)]",
-            showFlow ? "animate__animated animate__fadeOutUp" : hasLeft && "animate__animated animate__fadeInDown",
+            panelClass[heroMotion],
           )}
         >
           <div className="col-span-12 flex justify-between pt-[clamp(38px,7vh,72px)] text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
@@ -110,19 +186,23 @@ export function Hero() {
           </div>
         </section>
 
+        <section aria-labelledby="projects-title" inert={phase !== "projects"} className="absolute inset-0">
+          {/* Remounting on each appearance from above replays the entrance sequence */}
+          <Projects
+            key={projectsKey}
+            projects={projects}
+            activeIndex={activeProject}
+            motion={projectsMotion}
+            onSelect={selectProject}
+          />
+        </section>
+
         <section
           aria-labelledby="workflow-title"
           inert={phase !== "flow"}
-          className={cn(
-            "absolute inset-0",
-            phase === "hero" && (hasLeft ? "animate__animated animate__fadeOutDown" : "opacity-0"),
-            // Entering from the hero, the panel's parts run their own staged fade-ins (see Workflow).
-            phase === "flow" && enteredFrom === "after" && "animate__animated animate__fadeInDown",
-            phase === "after" && "animate__animated animate__fadeOutUp",
-          )}
+          className={cn("absolute inset-0", panelClass[flowMotion])}
         >
-          {/* Remounting on each appearance replays the entrance sequence */}
-          <Workflow key={playKey} steps={workflowSteps} />
+          <Workflow key={flowKey} steps={workflowSteps} />
         </section>
       </div>
     </div>
