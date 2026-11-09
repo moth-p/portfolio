@@ -1,8 +1,9 @@
-import Image from "next/image"
 import Link from "next/link"
+import type { CSSProperties } from "react"
 
 import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
+import { LaptopMockup } from "@/components/laptop-mockup"
 import { projects, type Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
@@ -51,19 +52,11 @@ export function ProjectDetail({ project, next }: { project: Project; next: Proje
       </section>
 
       <section
-        className="mx-gutter rounded-[32px] p-[clamp(20px,3vw,48px)] max-phone:rounded-[22px]"
-        style={{ backgroundColor: project.color }}
+        className="mockup-panel mx-gutter rounded-[32px] p-[clamp(20px,3vw,48px)] max-phone:rounded-[22px]"
+        style={{ "--panel": project.color } as CSSProperties}
       >
-        <div className="relative h-[min(70vw,740px)] overflow-hidden rounded-[18px] max-phone:h-[110vw] max-phone:rounded-xl">
-          <Image
-            src={project.image}
-            alt={`${project.title} project`}
-            fill
-            preload
-            quality={85}
-            sizes="100vw"
-            className="object-cover saturate-[0.7]"
-          />
+        <div className="relative h-[min(70vw,740px)] max-phone:h-[110vw]">
+          <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="100vw" preload />
         </div>
       </section>
 

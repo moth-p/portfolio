@@ -120,6 +120,8 @@
   --color-footer-foreground: var(--footer-foreground);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
+  --color-device: var(--device);
+  --color-device-body: var(--device-body);
 }
 
 :root {
@@ -137,6 +139,9 @@
   /* Fixed-ink colors used on the always-light highlight surfaces */
   --ink: #2a2a2a;
   --ink-muted: #787878;
+  /* Laptop mockup around project screenshots: the screen bezel and the aluminium body, the same in both themes */
+  --device: #1c1c1c;
+  --device-body: #b9b8b5;
 }
 
 [data-theme='dark'] {
@@ -210,6 +215,11 @@
     content: '';
     transform: rotate(-1.5deg);
   }
+}
+
+/* Panel behind a laptop mockup: the project's colour (--panel), else a mid grey; the same in both themes */
+@utility mockup-panel {
+  background-color: var(--panel, var(--ink-muted));
 }
 
 /* Underline that grows in from the left on hover / when active */

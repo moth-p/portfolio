@@ -1,11 +1,11 @@
 "use client"
 
 import { Accordion } from "radix-ui"
-import Image from "next/image"
 import Link from "next/link"
 import { useLayoutEffect, useRef } from "react"
 
 import { ArrowIcon } from "@/components/icons"
+import { LaptopMockup } from "@/components/laptop-mockup"
 import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
@@ -122,15 +122,14 @@ export function Projects({
                   <Link
                     href={href}
                     aria-label={`View ${project.title} case study`}
-                    className="group/image relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-[26px] bg-border max-phone:rounded-[18px]"
+                    className="group/image relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[18px]"
                   >
-                    <Image
+                    <LaptopMockup
                       src={project.image}
+                      video={project.video}
                       alt=""
-                      fill
-                      quality={85}
                       sizes="(max-width: 800px) 100vw, 60vw"
-                      className="object-cover saturate-[0.62] transition-[filter,scale] duration-[550ms,700ms] ease-[ease,var(--ease-soft)] group-hover/image:scale-[1.035] group-hover/image:saturate-[0.95]"
+                      laptopClassName="transition-[scale] duration-700 ease-soft group-hover/image:scale-[1.035]"
                     />
                   </Link>
                   <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">

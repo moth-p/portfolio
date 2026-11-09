@@ -7,66 +7,67 @@ export type Project = {
   summary: string
   description: string
   image: string
+  video: string
   color: string
   services: string[]
 }
 
 export const projects: Project[] = [
   {
-    id: "luma",
+    id: "mixxtopia",
     number: "01",
-    title: "Luma Living",
-    category: "Brand & digital",
-    year: "2025",
-    summary: "A gentler way to find your next home.",
+    title: "Mixxtopia",
+    category: "Brand site",
+    year: "2026",
+    summary: "A blueprint-style brand experience for NMIXX.",
     description:
-      "Luma transforms a typically stressful property search into a calm, considered experience. We created an identity and product system that makes every interaction feel reassuring, human, and clear.",
-    image:
-      "https://images.unsplash.com/photo-1534841070059-fac69c75d466?auto=format&fit=crop&w=1600&q=85",
+      "A single-page brand site for the K-pop group NMIXX, styled as a blueprint terminal HUD. A boot sequence leads into six scroll-linked scenes, from a 3D album ring to a submarine flight, all built on a strict design-token system with light and dark themes.",
+    image: "/projects/mixxtopia/cover.png",
+    video: "/projects/mixxtopia/preview.mp4",
     color: "#eee8d0",
-    services: ["Strategy", "Identity", "Product design"],
+    services: ["React", "GSAP", "three.js", "Tailwind CSS"],
   },
   {
-    id: "alto",
+    id: "sma-monitor",
     number: "02",
-    title: "Alto Objects",
-    category: "E-commerce",
-    year: "2024",
-    summary: "Everyday objects, elevated by intention.",
+    title: "SMA Monitor",
+    category: "IoT dashboard",
+    year: "2026",
+    summary: "Where every device is, and how it's performing.",
     description:
-      "A digital flagship for a new generation of collectible furniture. Generous space, tactile motion, and a modular editorial system let each object tell its own story.",
-    image:
-      "https://images.unsplash.com/photo-1758467614302-e429ce30fc13?auto=format&fit=crop&w=1600&q=85",
+      "A warehouse monitoring dashboard that pairs an interactive 3D building model with live metric charts. Device popovers stay anchored as the camera orbits, so an operator sees both where equipment sits and how it performs on one screen.",
+    image: "/projects/sma-monitor/cover.png",
+    video: "/projects/sma-monitor/preview.mp4",
     color: "#cccccc",
-    services: ["Creative direction", "Web design", "Development"],
+    services: ["React", "Autodesk Forge", "Chart.js", "shadcn/ui"],
   },
   {
-    id: "field",
+    id: "long-term-care",
     number: "03",
-    title: "Field Notes",
-    category: "Editorial platform",
-    year: "2024",
-    summary: "Stories from the people shaping new places.",
+    title: "UARK Care",
+    category: "Data dashboard",
+    year: "2026",
+    summary: "One overview for every care institution.",
     description:
-      "Field Notes is an independent journal exploring architecture, food, and local culture. The flexible identity and reading experience shift naturally between long-form stories and visual essays.",
-    image:
-      "https://images.unsplash.com/photo-1761237584852-1a6fc838d35a?auto=format&fit=crop&w=1600&q=85",
-    color: "#787878",
-    services: ["Editorial design", "Digital product", "Art direction"],
+      "A visualization dashboard for a group of long-term care institutions. Management sees occupancy, residents, diets, events and car dispatch across all sites at a glance, then drills into a single institution from one dropdown.",
+    image: "/projects/long-term-care/cover.png",
+    video: "/projects/long-term-care/preview.mp4",
+    color: "#d9d8d5",
+    services: ["React", "Redux Toolkit", "Leaflet", "Recharts"],
   },
   {
-    id: "common",
+    id: "gamehub",
     number: "04",
-    title: "Common Ground",
-    category: "Place & identity",
-    year: "2023",
-    summary: "A shared space for thoughtful city living.",
+    title: "GameHub",
+    category: "Web app",
+    year: "2026",
+    summary: "A pixel-art catalogue of 900k video games.",
     description:
-      "We shaped a living identity for a mixed-use neighborhood rooted in connection. The system balances a civic sense of permanence with warmth, movement, and daily discovery.",
-    image:
-      "https://images.unsplash.com/photo-1772734436980-f24738818c5c?auto=format&fit=crop&w=1600&q=85",
-    color: "#efefef",
-    services: ["Brand strategy", "Identity", "Environmental"],
+      "A retro, pixel-art catalogue for browsing the RAWG games database. Search, filter, sort and rank close to a million titles, open any game in detail, and keep a personal collection, with the API key kept safely on the server.",
+    image: "/projects/gamehub/cover.png",
+    video: "/projects/gamehub/preview.mp4",
+    color: "#787878",
+    services: ["Next.js", "RAWG API", "Tailwind CSS", "shadcn/ui"],
   },
 ]
 

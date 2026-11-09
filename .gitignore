@@ -24,3 +24,6 @@ logs/
 .next/
 out/
 next-env.d.ts
+
+# Raw project screen recordings (too large for git); the site uses public/projects/*/preview.mp4
+content/**/*.mov
