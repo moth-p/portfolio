@@ -63,10 +63,9 @@ const LANDING_HOLD_MS = 1000
 const LANDING_QUIET_MS = 200
 const LANDING_HOLD_MAX_MS = 2500
 
-// Entrance order: the title's lines fade in first, then each pixel icon, then the pet — all with fadeInUp.
+// Entrance order: the title's lines fade in first, then the pixel icons and the pet together — all with fadeInUp.
 const TITLE_MS = 1100
-const ICON_STAGGER_MS = 450
-const PET_DELAY_MS = TITLE_MS + 2 * ICON_STAGGER_MS
+const PET_DELAY_MS = TITLE_MS
 
 // The pet walks from its hero spot to the right of each section title, and in the slogan to its own spot beside
 // the cube.
@@ -122,7 +121,7 @@ export function Hero() {
   const holdLimit = useRef(0)
   // False until the first sync, which only picks up a restored scroll position.
   const started = useRef(false)
-  const pet = usePetEnergy()
+  const pet = usePetEnergy({ onHomePage: true })
   const stage = useRef<HTMLDivElement>(null)
   const petSpot = useRef<HTMLDivElement>(null)
   const petRef = useRef<HTMLDivElement>(null)
@@ -292,12 +291,12 @@ export function Hero() {
             <span>Independent designer</span>
             <span className="max-tab:hidden">Based in Amsterdam</span>
           </div>
-          {heroIcons.map(({ name, Icon, className, style }, index) => (
+          {heroIcons.map(({ name, Icon, className, style }) => (
             // The outer box plays the entrance, the inner one floats, so the two animations don't clash.
             <div
               key={name}
               aria-hidden="true"
-              style={{ animationDelay: `${TITLE_MS + index * ICON_STAGGER_MS}ms` }}
+              style={{ animationDelay: `${TITLE_MS}ms` }}
               className={cn("animate__animated animate__fadeInUp absolute z-[1] -translate-1/2", className)}
             >
               <div style={style} className="animate-float motion-reduce:animate-none">

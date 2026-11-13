@@ -10,6 +10,8 @@ const DRAIN_MS = 3000
 const TIRED_AT = 25
 const STORAGE_KEY = "portfolio-pet"
 const HOP_MS = 700
+// Loading or reloading the home page wakes the pet at this level.
+const HOME_LOAD_LEVEL = 80
 
 type Charge = { level: number; at: number }
 export type PetMood = "awake" | "tired" | "asleep"
@@ -19,6 +21,8 @@ export type PetMood = "awake" | "tired" | "asleep"
 const listeners = new Set<() => void>()
 // Fallback when localStorage is unavailable (e.g. blocked site data).
 let memoryCharge: string | null = null
+// Module state survives client-side navigation, so this marks the first pet shown since the page loaded.
+let loadHandled = false
 
 function readStorage() {
   try {
@@ -89,11 +93,40 @@ const pixelFill: Record<string, string> = {
   s: "fill-background",
 }
 
-const spritePixels = SPRITE.flatMap((row, y) =>
-  [...row].flatMap((cell, x) => (cell === "." ? [] : [{ x, y, fill: pixelFill[cell] }])),
-)
+// The reading pose on project pages, as tall as SPRITE but wider: a large open book (blank pages "p") held on the
+// pet's right side where the sword was, in front of its body; the eyes look over at it.
+const READING_SPRITE = [
+  "..oo......oo.........",
+  ".obbo....obbo........",
+  ".obbboooobbboooo.oooo",
+  "obbbbbbbbbbbopppopppo",
+  "obbbbbbbbbbbopppopppo",
+  "obbbbbbbbbbbopppopppo",
+  "obbbbbbbbbbbopppopppo",
+  "obbbbbbbbbbbopppopppo",
+  "obbbbbbbbbbbopppopppo",
+  ".obbbbbbbbbbooooooooo",
+  "..oooooooooo.........",
+  "..o.o....o.o.........",
+]
+
+const readingFill: Record<string, string> = {
+  ...pixelFill,
+  p: "fill-background",
+}
+
+function toPixels(sprite: string[], fills: Record<string, string>) {
+  return sprite.flatMap((row, y) =>
+    [...row].flatMap((cell, x) => (cell === "." ? [] : [{ x, y, fill: fills[cell] }])),
+  )
+}
+
+const spritePixels = toPixels(SPRITE, pixelFill)
+const readingPixels = toPixels(READING_SPRITE, readingFill)
 
 type Pixels = [number, number][]
+
+const readingEyes: Pixels = [[5, 5], [5, 6], [10, 5], [10, 6]]
 
 const eyes: Record<PetMood, Pixels> = {
   awake: [[4, 5], [4, 6], [9, 5], [9, 6]],
@@ -106,8 +139,9 @@ export const PET_WIDTH = 120
 export const PET_HEIGHT = (PET_WIDTH * SPRITE.length) / SPRITE[0].length
 
 // The sprite alone. Inside a `group` wrapper, data-walking swaps the idle motion for a walk cycle and
-// data-facing="left" mirrors it.
-export function PetSprite({ mood, hopping }: { mood: PetMood; hopping: boolean }) {
+// data-facing="left" mirrors it. `reading` swaps in the reading pose, which is always awake.
+export function PetSprite({ mood, hopping, reading = false }: { mood: PetMood; hopping: boolean; reading?: boolean }) {
+  const sprite = reading ? READING_SPRITE : SPRITE
   return (
     <div className="relative group-data-[facing=left]:-scale-x-100">
       {mood === "asleep" && (
@@ -119,20 +153,20 @@ export function PetSprite({ mood, hopping }: { mood: PetMood; hopping: boolean }
         </span>
       )}
       <svg
-        viewBox={`0 0 ${SPRITE[0].length} ${SPRITE.length}`}
+        viewBox={`0 0 ${sprite[0].length} ${sprite.length}`}
         shapeRendering="crispEdges"
         aria-hidden="true"
-        style={{ width: PET_WIDTH }}
+        style={{ width: (PET_WIDTH * sprite[0].length) / SPRITE[0].length }}
         className={cn(
           "block overflow-visible group-data-walking:animate-pet-walk motion-reduce:animate-none",
           hopping ? "animate-pet-hop" : mood === "asleep" ? "animate-pet-breathe" : "animate-pet-bob",
         )}
       >
-        {spritePixels.map(({ x, y, fill }) => (
+        {(reading ? readingPixels : spritePixels).map(({ x, y, fill }) => (
           <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className={fill} />
         ))}
         <g className={cn("fill-ink dark:fill-foreground", mood === "awake" && "animate-pet-blink [transform-box:fill-box] origin-center")}>
-          {eyes[mood].map(([x, y]) => (
+          {(reading ? readingEyes : eyes[mood]).map(([x, y]) => (
             <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} />
           ))}
         </g>
@@ -143,15 +177,19 @@ export function PetSprite({ mood, hopping }: { mood: PetMood; hopping: boolean }
 
 export type PetEnergy = ReturnType<typeof usePetEnergy>
 
-export function usePetEnergy() {
+// `onHomePage`: the first pet shown after a load or reload of the home page resets the energy to HOME_LOAD_LEVEL.
+export function usePetEnergy({ onHomePage = false }: { onHomePage?: boolean } = {}) {
   const charge = parseCharge(useSyncExternalStore(subscribe, () => readStorage() ?? memoryCharge, () => null))
   const [now, setNow] = useState(() => Date.now())
   const [hopping, setHopping] = useState(false)
 
-  // First visit: start the clock now.
   useEffect(() => {
-    if (!parseCharge(readStorage() ?? memoryCharge)) writeCharge({ level: 100, at: Date.now() })
-  }, [])
+    const firstSinceLoad = !loadHandled
+    loadHandled = true
+    if (onHomePage && firstSinceLoad) writeCharge({ level: HOME_LOAD_LEVEL, at: Date.now() })
+    // First visit: start the clock now.
+    else if (!parseCharge(readStorage() ?? memoryCharge)) writeCharge({ level: 100, at: Date.now() })
+  }, [onHomePage])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
@@ -230,20 +268,23 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
   )
 }
 
-// The pet sitting beside a page title, scaled to `height`; clicking it recharges it.
+const READING_WIDTH = (PET_WIDTH * READING_SPRITE[0].length) / SPRITE[0].length
+
+// The pet reading a book beside a page title, scaled to `height`. Away from the home page it never tires;
+// clicking it still recharges it.
 export function TitlePet({ height, className }: { height: number; className?: string }) {
-  const { mood, hopping, recharge } = usePetEnergy()
+  const { hopping, recharge } = usePetEnergy()
   const scale = height / PET_HEIGHT
   return (
     <button
       type="button"
       onClick={recharge}
       aria-label="Recharge the pet"
-      style={{ width: PET_WIDTH * scale, height }}
+      style={{ width: READING_WIDTH * scale, height }}
       className={cn("relative flex-none", className)}
     >
       <span className="absolute top-0 left-0 origin-top-left" style={{ scale }}>
-        <PetSprite mood={mood} hopping={hopping} />
+        <PetSprite mood="awake" hopping={hopping} reading />
       </span>
     </button>
   )
