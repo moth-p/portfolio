@@ -6,7 +6,7 @@ const navLink = "link-underline py-2.5 text-[13px]"
 
 const navItems = [
   { id: "home", label: "Home", href: "/" },
-  { id: "projects", label: "Projects", href: "/works" },
+  { id: "projects", label: "Projects", href: "/projects" },
 ] as const
 
 export function SiteHeader({

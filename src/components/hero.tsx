@@ -19,15 +19,18 @@ import { cn } from "@/lib/utils"
 
 // Scroll distances in viewport heights. The hero hands over to the project list once SWITCH_AT has been scrolled…
 const SWITCH_AT = 0.12
-// …which unfolds one project per PROJECT_STEP, then the slogan holds for SLOGAN_STEP while its cube solves itself…
+// …which unfolds one project per PROJECT_STEP, then the slogan, whose cube solves itself in step with the scroll
+// between SOLVE_LEAD after it appears and SOLVE_LEAD before it leaves…
 const PROJECT_STEP = 0.5
 const SLOGAN_AT = SWITCH_AT + projects.length * PROJECT_STEP
-const SLOGAN_STEP = 1
+const SOLVE_LEAD = 0.2
+const SLOGAN_STEP = 1.6
 const FLOW_AT = SLOGAN_AT + SLOGAN_STEP
-// …then the work flow until LINKS_AT, where it fades out and the link section fades in right away with the footer
-// at its bottom. The page ends on that screen, LINKS_STEP further down (the track needs to run past LINKS_AT, or
-// the link section could never be reached).
-const LINKS_AT = FLOW_AT + 1.08
+// …then the work flow, which reveals one step (and unfolds its brief) per FLOW_STEP, until LINKS_AT, where it fades
+// out and the link section fades in right away with the footer at its bottom. The page ends on that screen,
+// LINKS_STEP further down (the track needs to run past LINKS_AT, or the link section could never be reached).
+const FLOW_STEP = 0.4
+const LINKS_AT = FLOW_AT + workflowSteps.length * FLOW_STEP
 const LINKS_STEP = 0.5
 const TRACK = LINKS_AT + LINKS_STEP
 
@@ -35,7 +38,7 @@ const PHASES = ["hero", "projects", "slogan", "flow", "links"] as const
 type Phase = (typeof PHASES)[number]
 
 type HeroMotion = "none" | "out-up" | "in-down"
-type FlowMotion = "hidden" | "enter" | "in-down" | "out-up" | "out-down"
+type FlowMotion = "hidden" | "enter" | "in-down" | "out-sides" | "out-down"
 type LinksMotion = "hidden" | "in" | "out-down"
 
 const panelClass: Record<HeroMotion | FlowMotion, string> = {
@@ -43,6 +46,8 @@ const panelClass: Record<HeroMotion | FlowMotion, string> = {
   hidden: "opacity-0",
   // Entering from above, the work flow's parts run their own staged fade-ins (see Workflow).
   enter: "",
+  // Leaving for the link section, the work flow's halves part to the sides (see Workflow).
+  "out-sides": "",
   "in-down": "animate__animated animate__fadeInDown",
   "out-up": "animate__animated animate__fadeOutUp",
   "out-down": "animate__animated animate__fadeOutDown",
@@ -55,13 +60,23 @@ const linksClass: Record<LinksMotion, string> = {
   "out-down": "animate__animated animate__fadeOutDown",
 }
 
-// Scroll position (in viewport heights) that opens a given project.
+const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
+
+// Scroll position (in viewport heights) that opens a given project or work flow step.
 const projectScroll = (index: number) => SWITCH_AT + (index + 0.5) * PROJECT_STEP
-// After entering the list from the hero, the scroll stays on the first project for at least
-// LANDING_HOLD_MS, and longer while the swipe's wheel events keep coming (up to LANDING_HOLD_MAX_MS).
+const flowScroll = (index: number) => FLOW_AT + (index + 0.5) * FLOW_STEP
+// After entering the project list from the hero, or the work flow from the slogan, the scroll stays on the first
+// project (or step) for at least LANDING_HOLD_MS while the panel fades in, and longer while the swipe's wheel events
+// keep coming (up to LANDING_HOLD_MAX_MS).
 const LANDING_HOLD_MS = 1000
 const LANDING_QUIET_MS = 200
 const LANDING_HOLD_MAX_MS = 2500
+// Scrolling across the point where the cube starts solving, where it is solved, or where the work flow has shown
+// all its steps (before it leaves for the link section), stops there for a moment (STOP_HOLD_MS, stretched while
+// wheel events keep coming up to STOP_HOLD_MAX_MS), either way.
+const STOPS = [SLOGAN_AT + SOLVE_LEAD, FLOW_AT - SOLVE_LEAD, flowScroll(workflowSteps.length - 1)]
+const STOP_HOLD_MS = 350
+const STOP_HOLD_MAX_MS = 800
 
 // Entrance order: the title's lines fade in first, then the pixel icons and the pet together — all with fadeInUp.
 const TITLE_MS = 1100
@@ -105,6 +120,10 @@ export function Hero() {
   // Scroll position through the project list, in projects: 0 has the first one open, 1.5 has the second one
   // halfway over the third, and so on.
   const [projectProgress, setProjectProgress] = useState(0)
+  // How far the slogan's cube has solved itself, 0 to 1.
+  const [solveProgress, setSolveProgress] = useState(0)
+  // Scroll position through the work flow, in steps, like projectProgress.
+  const [flowProgress, setFlowProgress] = useState(0)
   const [heroMotion, setHeroMotion] = useState<HeroMotion>("none")
   const [projectsMotion, setProjectsMotion] = useState<ProjectsMotion>("hidden")
   const [sloganMotion, setSloganMotion] = useState<SloganMotion>("hidden")
@@ -112,13 +131,15 @@ export function Hero() {
   const [linksMotion, setLinksMotion] = useState<LinksMotion>("hidden")
   // Bumped each time a panel is entered from above so its entrance animation (or the cube's solve) replays.
   const [projectsKey, setProjectsKey] = useState(0)
-  const [sloganKey, setSloganKey] = useState(0)
   const [flowKey, setFlowKey] = useState(0)
   const [linksKey, setLinksKey] = useState(0)
   const currentPhase = useRef<Phase>("hero")
-  // Until this time the scroll is held on the first project (see LANDING_HOLD_MS).
+  // Until this time the scroll is held at holdAt, the first project or step (see LANDING_HOLD_MS).
   const holdUntil = useRef(0)
   const holdLimit = useRef(0)
+  const holdAt = useRef(0)
+  // The scroll position at the last sync, to tell when a stop is crossed.
+  const lastScrolled = useRef(0)
   // False until the first sync, which only picks up a restored scroll position.
   const started = useRef(false)
   const pet = usePetEnergy({ onHomePage: true })
@@ -129,11 +150,24 @@ export function Hero() {
 
   const sync = useCallback(() => {
     if (performance.now() < holdUntil.current) {
-      window.scrollTo({ top: projectScroll(0) * window.innerHeight, behavior: "instant" })
+      window.scrollTo({ top: holdAt.current * window.innerHeight, behavior: "instant" })
       return
     }
     // The hero opens the page, so the page scroll is how far into the track we are.
     let scrolled = window.scrollY / window.innerHeight
+    const hold = (at: number, ms: number, maxMs: number) => {
+      scrolled = at
+      holdAt.current = at
+      window.scrollTo({ top: at * window.innerHeight, behavior: "instant" })
+      holdUntil.current = performance.now() + ms
+      holdLimit.current = performance.now() + maxMs
+    }
+    const last = lastScrolled.current
+    // A long jump may cross both stops; it stops at the first one it reaches.
+    const stop = STOPS.filter((at) => (last < at && scrolled >= at) || (last > at && scrolled <= at)).sort(
+      (a, b) => Math.abs(a - last) - Math.abs(b - last),
+    )[0]
+    if (started.current && stop !== undefined) hold(stop, STOP_HOLD_MS, STOP_HOLD_MAX_MS)
     const next: Phase =
       scrolled > LINKS_AT
         ? "links"
@@ -144,16 +178,20 @@ export function Hero() {
             : scrolled > SWITCH_AT
               ? "projects"
               : "hero"
-    // Scrolling down from the hero always lands on the first project and holds there while the
-    // slides fade in, so a fast swipe can't carry past them.
-    if (started.current && currentPhase.current === "hero" && next === "projects") {
-      scrolled = projectScroll(0)
-      window.scrollTo({ top: scrolled * window.innerHeight, behavior: "instant" })
-      holdUntil.current = performance.now() + LANDING_HOLD_MS
-      holdLimit.current = performance.now() + LANDING_HOLD_MAX_MS
-    }
+    // Scrolling down from the hero always lands on the first project, and from the slogan on the first work flow
+    // step, and holds there while the panel fades in, so a fast swipe can't carry past them.
+    const landing =
+      currentPhase.current === "hero" && next === "projects"
+        ? projectScroll(0)
+        : currentPhase.current === "slogan" && next === "flow"
+          ? flowScroll(0)
+          : null
+    if (started.current && landing !== null) hold(landing, LANDING_HOLD_MS, LANDING_HOLD_MAX_MS)
+    lastScrolled.current = scrolled
     started.current = true
-    setProjectProgress(Math.min(projects.length - 1, Math.max(0, (scrolled - projectScroll(0)) / PROJECT_STEP)))
+    setProjectProgress(clamp((scrolled - projectScroll(0)) / PROJECT_STEP, projects.length - 1))
+    setSolveProgress(clamp((scrolled - SLOGAN_AT - SOLVE_LEAD) / (SLOGAN_STEP - 2 * SOLVE_LEAD), 1))
+    setFlowProgress(clamp((scrolled - flowScroll(0)) / FLOW_STEP, workflowSteps.length - 1))
 
     const previous = currentPhase.current
     if (next === previous) return
@@ -173,7 +211,6 @@ export function Hero() {
 
     if (next === "slogan") {
       setSloganMotion(forward ? "in-up" : "in-down")
-      if (forward) setSloganKey((key) => key + 1)
     } else if (previous === "slogan") {
       setSloganMotion(forward ? "out-up" : "out-down")
     }
@@ -182,7 +219,7 @@ export function Hero() {
       setFlowMotion(forward ? "enter" : "in-down")
       if (forward) setFlowKey((key) => key + 1)
     } else if (previous === "flow") {
-      setFlowMotion(forward ? "out-up" : "out-down")
+      setFlowMotion(forward ? "out-sides" : "out-down")
     }
 
     if (next === "links") {
@@ -195,6 +232,10 @@ export function Hero() {
 
   const selectProject = useCallback((index: number) => {
     window.scrollTo({ top: projectScroll(index) * window.innerHeight, behavior: "smooth" })
+  }, [])
+
+  const selectFlowStep = useCallback((index: number) => {
+    window.scrollTo({ top: flowScroll(index) * window.innerHeight, behavior: "smooth" })
   }, [])
 
   useEffect(() => {
@@ -363,7 +404,7 @@ export function Hero() {
         </section>
 
         <section aria-label="Solution Provider" inert={phase !== "slogan"} className="absolute inset-0">
-          <Slogan motion={sloganMotion} active={phase === "slogan"} playKey={sloganKey} />
+          <Slogan motion={sloganMotion} active={phase === "slogan"} progress={solveProgress} />
         </section>
 
         <section
@@ -371,7 +412,13 @@ export function Hero() {
           inert={phase !== "flow"}
           className={cn("absolute inset-0", panelClass[flowMotion])}
         >
-          <Workflow key={flowKey} steps={workflowSteps} />
+          <Workflow
+            key={flowKey}
+            steps={workflowSteps}
+            progress={flowProgress}
+            leaving={flowMotion === "out-sides"}
+            onSelect={selectFlowStep}
+          />
         </section>
 
         {/* The footer is part of this last screen, so the link text centres in the space between header and footer */}
@@ -395,7 +442,11 @@ export function Hero() {
         >
           <div style={{ animationDelay: `${PET_DELAY_MS}ms` }} className="animate__animated animate__fadeInUp">
             <div
-              className={cn((phase === "flow" || phase === "links") && flowMotion !== "enter" && panelClass[flowMotion])}
+              className={cn(
+                (phase === "flow" || phase === "links") && flowMotion !== "enter" && panelClass[flowMotion],
+                // Beside the work flow title, it leaves with the left half.
+                flowMotion === "out-sides" && "animate__animated animate__fadeOutLeft",
+              )}
             >
               <PetSprite mood={phase === "hero" ? pet.mood : "awake"} hopping={pet.hopping} />
             </div>

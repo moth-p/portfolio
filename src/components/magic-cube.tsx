@@ -10,7 +10,7 @@ const MODEL_URL = "/models/magic-cube.glb"
 // A quarter turn of one layer: the axis, which layer along it (-1, 0, 1) and the turn direction.
 type Turn = { axis: "x" | "y" | "z"; layer: -1 | 0 | 1; dir: 1 | -1 }
 
-// The solve, played one turn per step. The cube starts scrambled by undoing these steps in reverse,
+// The solve, one turn per step. The cube starts scrambled by undoing these steps in reverse,
 // so playing them leaves every layer correct.
 const SOLVE: Turn[] = [
   { axis: "y", layer: 1, dir: -1 },
@@ -18,9 +18,9 @@ const SOLVE: Turn[] = [
   { axis: "z", layer: 1, dir: -1 },
   { axis: "x", layer: -1, dir: 1 },
 ]
-const START_DELAY_MS = 900
-const TURN_MS = 620
-const TURN_PAUSE_MS = 260
+// How quickly the shown solve catches up with the scroll (share of the gap closed per 60fps frame), so wheel
+// steps turn the layers smoothly instead of jumping.
+const FOLLOW = 0.08
 
 // Gentle hover: a slow vertical bob with a slight sway, around a three-quarter view.
 const FLOAT_HEIGHT = 0.07
@@ -57,13 +57,13 @@ function turnLayer(parts: Part[], turn: Turn, progress = 1) {
 
 const invert = (turn: Turn): Turn => ({ ...turn, dir: turn.dir === 1 ? -1 : 1 })
 
-// The puzzle cube, floating and solving itself in four turns. Rendering runs only while `active`;
-// each change of `playKey` scrambles it again and replays the solve.
-export default function MagicCube({ active, playKey }: { active: boolean; playKey: number }) {
+// The puzzle cube, floating and solving itself in four turns as `progress` goes from 0 (scrambled) to 1 (solved),
+// so the solve follows the scroll both ways. Rendering runs only while `active`.
+export default function MagicCube({ active, progress }: { active: boolean; progress: number }) {
   const container = useRef<HTMLDivElement>(null)
-  const controls = useRef<{ setActive: (active: boolean) => void; play: () => void } | null>(null)
+  const controls = useRef<{ setActive: (active: boolean) => void } | null>(null)
   const activeRef = useRef(active)
-  const playKeyRef = useRef(playKey)
+  const progressRef = useRef(progress)
 
   useEffect(() => {
     const element = container.current
@@ -98,39 +98,34 @@ export default function MagicCube({ active, playKey }: { active: boolean; playKe
     scene.add(hover)
 
     let parts: Part[] = []
-    // The running turn, or the time the next one starts.
-    let step = 0
-    let stepAt = 0
-    let turning: { turn: Turn; moving: Part[]; from: THREE.Quaternion[]; start: number } | null = null
+    // The solve as currently drawn, in turns (0 to SOLVE.length); -1 until the first pose.
+    let shown = -1
 
-    const scramble = () => {
+    // Lay the parts out `turns` turns into the solve: scrambled, then each whole turn, then part of the next one.
+    const pose = (turns: number) => {
+      shown = turns
       parts.forEach((part) => part.mesh.quaternion.identity())
       ;[...SOLVE].reverse().forEach((turn) => turnLayer(parts, invert(turn)))
-      step = 0
-      turning = null
-      stepAt = performance.now() + START_DELAY_MS
+      const done = Math.floor(turns)
+      SOLVE.slice(0, done).forEach((turn) => turnLayer(parts, turn))
+      if (done < SOLVE.length && turns > done) turnLayer(parts, SOLVE[done], easeInOut(turns - done))
     }
 
-    const advance = (now: number) => {
-      if (turning) {
-        const progress = Math.min(1, (now - turning.start) / TURN_MS)
-        const rotation = turnQuaternion(turning.turn, easeInOut(progress))
-        turning.moving.forEach((part, index) => part.mesh.quaternion.copy(turning!.from[index]).premultiply(rotation))
-        if (progress === 1) {
-          turning = null
-          step += 1
-          stepAt = now + TURN_PAUSE_MS
-        }
-      } else if (step < SOLVE.length && now >= stepAt) {
-        const turn = SOLVE[step]
-        turning = { turn, ...turnLayer(parts, turn, 0), start: now }
-      }
+    let last = 0
+    const follow = (now: number) => {
+      const target = Math.max(0, Math.min(1, progressRef.current)) * SOLVE.length
+      const elapsed = last ? Math.min(100, now - last) : 1000
+      last = now
+      if (shown === target) return
+      const gap = target - shown
+      const step = reducedMotion || shown < 0 ? gap : gap * (1 - (1 - FOLLOW) ** (elapsed / 16.7))
+      pose(Math.abs(gap - step) < 0.001 ? target : shown + step)
     }
 
     let frame = 0
     const render = (now: number) => {
+      if (parts.length > 0) follow(now)
       if (parts.length > 0 && !reducedMotion) {
-        advance(now)
         const phase = (now / FLOAT_PERIOD_MS) * Math.PI * 2
         hover.position.y = Math.sin(phase) * FLOAT_HEIGHT
         hover.rotation.set(VIEW_TILT + Math.sin(phase + 1) * 0.03, VIEW_TURN + Math.sin(phase * 0.5) * 0.06, 0)
@@ -143,12 +138,10 @@ export default function MagicCube({ active, playKey }: { active: boolean; playKe
     }
     const setActive = (next: boolean) => {
       cancelAnimationFrame(frame)
+      last = 0
       if (next) frame = requestAnimationFrame(loop)
     }
-    const play = () => {
-      if (parts.length > 0 && !reducedMotion) scramble()
-    }
-    controls.current = { setActive, play }
+    controls.current = { setActive }
 
     const resize = () => {
       const { width, height } = element.getBoundingClientRect()
@@ -190,7 +183,6 @@ export default function MagicCube({ active, playKey }: { active: boolean; playKe
         const home = mesh.geometry.boundingBox!.getCenter(new THREE.Vector3()).multiplyScalar(size / pitch)
         return { mesh, home }
       })
-      if (playKeyRef.current > 0) play()
       render(performance.now())
     })
 
@@ -217,9 +209,8 @@ export default function MagicCube({ active, playKey }: { active: boolean; playKe
   }, [active])
 
   useEffect(() => {
-    playKeyRef.current = playKey
-    if (playKey > 0) controls.current?.play()
-  }, [playKey])
+    progressRef.current = progress
+  }, [progress])
 
   return <div ref={container} aria-hidden="true" className="size-full" />
 }

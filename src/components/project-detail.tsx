@@ -11,11 +11,11 @@ const label = "text-[10px] tracking-[0.1em] uppercase"
 // Pill buttons laid over the cover panel. Back to the list is the same outlined pill, filled light yellow
 // and turning black on hover, in both themes.
 const panelButton =
-  "absolute z-[1] flex max-w-[calc(50%-16px)] items-center rounded-full font-sans transition-colors duration-[250ms]"
+  "absolute z-[1] flex max-w-[calc(50%-16px)] items-center rounded-full font-sans text-[15px] font-semibold transition-colors duration-[250ms]"
 const backButton =
-  "gap-2.5 border border-ink bg-highlight py-2.5 pr-4 pl-3 text-xs text-ink hover:bg-ink hover:text-highlight max-phone:py-2 max-phone:text-[11px]"
+  "gap-2.5 border border-ink bg-highlight py-2.5 pr-4 pl-3 text-ink hover:bg-ink hover:text-highlight max-phone:py-2 max-phone:text-[13px]"
 const pageButton =
-  "gap-2.5 border border-ink bg-background/80 py-2.5 text-xs text-ink backdrop-blur-sm hover:border-ink hover:bg-highlight hover:text-ink dark:border-border dark:text-foreground dark:hover:border-ink dark:hover:text-ink max-phone:py-2 max-phone:text-[11px]"
+  "gap-2.5 border border-ink bg-background/80 py-2.5 text-ink backdrop-blur-sm hover:border-ink hover:bg-highlight hover:text-ink dark:border-border dark:text-foreground dark:hover:border-ink dark:hover:text-ink max-phone:py-2 max-phone:text-[13px]"
 const panelInset = "clamp(12px,1.6vw,20px)"
 
 export function ProjectDetail({ project, previous, next }: { project: Project; previous: Project; next: Project }) {
@@ -26,7 +26,7 @@ export function ProjectDetail({ project, previous, next }: { project: Project; p
         <div className="relative col-span-6 min-h-[320px] overflow-hidden rounded-[26px] mockup-panel max-tab:col-span-1 max-tab:aspect-[16/11] max-tab:min-h-0 max-phone:aspect-[4/3.6] max-phone:rounded-[18px]">
           <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="(max-width: 800px) 100vw, 60vw" preload className="max-tab:py-[68px] max-phone:py-[58px]" />
           <Link
-            href="/works"
+            href="/projects"
             style={{ top: panelInset, left: panelInset }}
             className={cn(panelButton, backButton)}
           >

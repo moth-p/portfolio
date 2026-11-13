@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Every project, from brand systems to digital products.",
 }
 
-export default function WorksPage() {
+export default function ProjectsPage() {
   return (
     <main className="pt-header">
       <SiteHeader active="projects" />
@@ -24,7 +24,7 @@ export default function WorksPage() {
               as="h1"
               className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
             >
-              Projects
+              Projects List
             </FadeInUp>
           }
         />

@@ -100,3 +100,175 @@ export function PixelCursor({ className }: { className?: string }) {
 export function PixelRepeat({ className }: { className?: string }) {
   return <PixelIcon sprite={repeat} className={className} />
 }
+
+// The light wave the pet slashes from its sword: a crescent bulging toward where it flies (right).
+const wave = sprite([
+  "bb...",
+  ".bb..",
+  "..bb.",
+  "..bbb",
+  "..bbb",
+  "..bbb",
+  "..bb.",
+  ".bb..",
+  "bb...",
+])
+
+// Unlike the other icons it stays light in dark mode, so it reads as light either way.
+export function PixelWave({ className }: { className?: string }) {
+  const { body, outline, width, height } = wave
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+      className={cn("block h-auto w-full", className)}
+    >
+      <Pixels cells={outline} className="fill-ink dark:fill-foreground" />
+      <Pixels cells={body} className="fill-highlight" />
+    </svg>
+  )
+}
+
+// Work flow step icons, one per step, all on the same 15-cell-wide grid so they share a pixel size.
+
+// Project Scope: a magnifying glass.
+const magnifier = sprite([
+  "...bbbbb.......",
+  "..bb...bb......",
+  ".bb.....bb.....",
+  "bb.......bb....",
+  "bb.......bb....",
+  "bb.......bb....",
+  "bb.......bb....",
+  ".bb.....bb.....",
+  "..bb...bbb.....",
+  "...bbbbbbbb....",
+  ".........bbb...",
+  "..........bbb..",
+  "...........bbb.",
+  "............bbb",
+  ".............bb",
+])
+
+// References Collection: a framed picture of a sun over hills.
+const picture = sprite([
+  "bbbbbbbbbbbbbbb",
+  "bb...........bb",
+  "bb.......bb..bb",
+  "bb.......bb..bb",
+  "bb...........bb",
+  "bb...b.......bb",
+  "bb..bbb......bb",
+  "bb.bbbbb..b..bb",
+  "bbbbbbbbbbbbbbb",
+  "bbbbbbbbbbbbbbb",
+])
+
+// Prototype: a gear.
+const gear = sprite([
+  "......bbb......",
+  "..bb..bbb..bb..",
+  "..bbbbbbbbbbb..",
+  "...bbbbbbbbb...",
+  "..bbbb...bbbb..",
+  "..bbb.....bbb..",
+  "bbbbb.....bbbbb",
+  "bbbbb.....bbbbb",
+  "bbbbb.....bbbbb",
+  "..bbb.....bbb..",
+  "..bbbb...bbbb..",
+  "...bbbbbbbbb...",
+  "..bbbbbbbbbbb..",
+  "..bb..bbb..bb..",
+  "......bbb......",
+])
+
+// MVP: a rocket lifting off.
+const rocket = sprite([
+  "......bbb......",
+  ".....bbbbb.....",
+  "....bbbbbbb....",
+  "....bb...bb....",
+  "....bb...bb....",
+  "....bbbbbbb....",
+  "....bbbbbbb....",
+  "...bbbbbbbbb...",
+  "..bbbbbbbbbbb..",
+  "..bbb.bbb.bbb..",
+  "..bb..b.b..bb..",
+  "......b.b......",
+])
+
+// Tech Stack: three stacked layers.
+const layers = sprite([
+  "..bbbbbbbbbbb..",
+  "..bbbbbbbbbbb..",
+  "...............",
+  ".bbbbbbbbbbbbb.",
+  ".bbbbbbbbbbbbb.",
+  "...............",
+  "bbbbbbbbbbbbbbb",
+  "bbbbbbbbbbbbbbb",
+])
+
+// Implementation Plan: a milestone flag.
+const flag = sprite([
+  "bb.............",
+  "bbbbbbbbbbb....",
+  "bbbbbbbbbbbbb..",
+  "bbbbbbbbbbbbbbb",
+  "bbbbbbbbbbbbb..",
+  "bbbbbbbbbbb....",
+  "bb.............",
+  "bb.............",
+  "bb.............",
+  "bb.............",
+  "bb.............",
+  "bb.............",
+])
+
+export function PixelMagnifier({ className }: { className?: string }) {
+  return <PixelIcon sprite={magnifier} className={className} />
+}
+
+export function PixelPicture({ className }: { className?: string }) {
+  return <PixelIcon sprite={picture} className={className} />
+}
+
+export function PixelGear({ className }: { className?: string }) {
+  return <PixelIcon sprite={gear} className={className} />
+}
+
+export function PixelRocket({ className }: { className?: string }) {
+  return <PixelIcon sprite={rocket} className={className} />
+}
+
+export function PixelLayers({ className }: { className?: string }) {
+  return <PixelIcon sprite={layers} className={className} />
+}
+
+export function PixelFlag({ className }: { className?: string }) {
+  return <PixelIcon sprite={flag} className={className} />
+}
+
+// A 3×5 pixel font for numbers.
+const digits: Record<string, string[]> = {
+  "0": ["bbb", "b.b", "b.b", "b.b", "bbb"],
+  "1": [".b.", "bb.", ".b.", ".b.", "bbb"],
+  "2": ["bbb", "..b", "bbb", "b..", "bbb"],
+  "3": ["bbb", "..b", "bbb", "..b", "bbb"],
+  "4": ["b.b", "b.b", "bbb", "..b", "..b"],
+  "5": ["bbb", "b..", "bbb", "..b", "bbb"],
+  "6": ["bbb", "b..", "bbb", "b.b", "bbb"],
+  "7": ["bbb", "..b", "..b", ".b.", ".b."],
+  "8": ["bbb", "b.b", "bbb", "b.b", "bbb"],
+  "9": ["bbb", "b.b", "bbb", "..b", "bbb"],
+}
+
+// A number set in the pixel font, a cell apart, in the icons' colours. The SVG fills its height.
+export function PixelNumber({ value, className }: { value: string; className?: string }) {
+  const glyphs = [...value].map((digit) => digits[digit]).filter(Boolean)
+  const rows = digits["0"].map((_, y) => glyphs.map((glyph) => glyph[y]).join("."))
+  return <PixelIcon sprite={sprite(rows)} className={cn("h-full w-auto", className)} />
+}

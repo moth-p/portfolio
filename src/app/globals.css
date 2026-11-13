@@ -16,7 +16,6 @@
 
   /* Work flow chart: arrows draw from their start point */
   --animate-draw-down: draw-down 320ms var(--ease-soft) both;
-  --animate-draw-across: draw-across 320ms var(--ease-soft) both;
   /* Hero photos: slow bob up and down */
   --animate-float: float 6s ease-in-out infinite alternate;
   /* Hero pixel pet */
@@ -26,6 +25,10 @@
   --animate-pet-hop: pet-hop 350ms steps(3) 2;
   --animate-pet-z: pet-z 2s ease-out infinite;
   --animate-pet-walk: pet-walk 320ms steps(1) infinite;
+  /* Link section: the pet slashes, a light wave flies to the button, the button takes the hit. One shared cycle. */
+  --animate-pet-swing: pet-swing 2.4s infinite;
+  --animate-light-wave: light-wave 2.4s infinite;
+  --animate-wave-hit: wave-hit 2.4s infinite;
 
   @keyframes float {
     from {
@@ -67,6 +70,74 @@
       transform: translateY(-4px) rotate(5deg);
     }
   }
+  /* Wind up backwards, slash forward fast, hold, then lower the sword */
+  @keyframes pet-swing {
+    0%,
+    8% {
+      transform: rotate(0);
+      animation-timing-function: ease-out;
+    }
+    22% {
+      transform: rotate(-40deg);
+      animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5);
+    }
+    30%,
+    46% {
+      transform: rotate(105deg);
+      animation-timing-function: ease-in-out;
+    }
+    62%,
+    100% {
+      transform: rotate(0);
+    }
+  }
+  /* Leaves the sword as it lands (30%), flies across its track and bursts on the button (55%) */
+  @keyframes light-wave {
+    0%,
+    28% {
+      left: 0;
+      opacity: 0;
+      transform: translateY(-50%) scale(0.5);
+    }
+    32% {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.8, 1);
+    }
+    55% {
+      left: calc(100% - var(--wave-width));
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+    62%,
+    100% {
+      left: calc(100% - var(--wave-width));
+      opacity: 0;
+      transform: translateY(-50%) scale(1.6, 1.3);
+    }
+  }
+  /* Knocked back a little, with a glow ring spreading from the hit */
+  @keyframes wave-hit {
+    0%,
+    54% {
+      transform: translateX(0);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--highlight) 90%, transparent);
+    }
+    58% {
+      transform: translateX(7px);
+    }
+    63% {
+      transform: translateX(-3px);
+    }
+    68% {
+      transform: translateX(0);
+    }
+    78%,
+    100% {
+      box-shadow: 0 0 0 14px color-mix(in srgb, var(--highlight) 0%, transparent);
+    }
+  }
+
   @keyframes pet-z {
     from {
       opacity: 0;
@@ -84,11 +155,6 @@
   @keyframes draw-down {
     from {
       transform: scaleY(0);
-    }
-  }
-  @keyframes draw-across {
-    from {
-      transform: scaleX(0);
     }
   }
 }

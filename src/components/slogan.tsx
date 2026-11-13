@@ -21,7 +21,8 @@ const motionClass: Record<SloganMotion, string> = {
   hidden: "opacity-0",
   "in-up": "animate__animated animate__fadeInUp [--animate-duration:800ms]",
   "in-down": "animate__animated animate__fadeInDown",
-  "out-up": "animate__animated animate__fadeOutUp",
+  // Leaving downwards it clears quickly, so the work flow's entrance can start (see Workflow).
+  "out-up": "animate__animated animate__fadeOutUp [--animate-duration:500ms]",
   "out-down": "animate__animated animate__fadeOutDown",
 };
 
@@ -51,11 +52,12 @@ function Star({ className }: { className?: string }) {
 export function Slogan({
   motion,
   active,
-  playKey,
+  progress,
 }: {
   motion: SloganMotion;
   active: boolean;
-  playKey: number;
+  /** How far the cube has solved itself, 0 to 1, following the scroll */
+  progress: number;
 }) {
   return (
     <div className="flex h-svh flex-col items-center justify-center px-gutter">
@@ -79,7 +81,7 @@ export function Slogan({
           <Star className="top-[11.5%] left-[82%] size-[18px]" />
         </div>
         <div className="relative size-full">
-          <MagicCube active={active} playKey={playKey} />
+          <MagicCube active={active} progress={progress} />
         </div>
         {/* The pet's spot, standing at the cube's right side; the pet itself is drawn by the hero */}
         <div

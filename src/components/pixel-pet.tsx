@@ -122,6 +122,11 @@ function toPixels(sprite: string[], fills: Record<string, string>) {
 }
 
 const spritePixels = toPixels(SPRITE, pixelFill)
+// For the attack, the paw and sword (from SWORD_X rightwards) swing as one around the grip (SWORD_PIVOT).
+const SWORD_X = 14
+const SWORD_PIVOT = "16.5px 7px"
+const bodyPixels = spritePixels.filter(({ x }) => x < SWORD_X)
+const swordPixels = spritePixels.filter(({ x }) => x >= SWORD_X)
 const readingPixels = toPixels(READING_SPRITE, readingFill)
 
 type Pixels = [number, number][]
@@ -139,8 +144,19 @@ export const PET_WIDTH = 120
 export const PET_HEIGHT = (PET_WIDTH * SPRITE.length) / SPRITE[0].length
 
 // The sprite alone. Inside a `group` wrapper, data-walking swaps the idle motion for a walk cycle and
-// data-facing="left" mirrors it. `reading` swaps in the reading pose, which is always awake.
-export function PetSprite({ mood, hopping, reading = false }: { mood: PetMood; hopping: boolean; reading?: boolean }) {
+// data-facing="left" mirrors it. `reading` swaps in the reading pose, which is always awake. `attacking` swings the
+// sword over and over (animate-pet-swing, timed with the light wave it throws; see LinkSection).
+export function PetSprite({
+  mood,
+  hopping,
+  reading = false,
+  attacking = false,
+}: {
+  mood: PetMood
+  hopping: boolean
+  reading?: boolean
+  attacking?: boolean
+}) {
   const sprite = reading ? READING_SPRITE : SPRITE
   return (
     <div className="relative group-data-[facing=left]:-scale-x-100">
@@ -162,9 +178,19 @@ export function PetSprite({ mood, hopping, reading = false }: { mood: PetMood; h
           hopping ? "animate-pet-hop" : mood === "asleep" ? "animate-pet-breathe" : "animate-pet-bob",
         )}
       >
-        {(reading ? readingPixels : spritePixels).map(({ x, y, fill }) => (
+        {(reading ? readingPixels : attacking ? bodyPixels : spritePixels).map(({ x, y, fill }) => (
           <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className={fill} />
         ))}
+        {attacking && !reading && (
+          <g
+            style={{ transformOrigin: SWORD_PIVOT }}
+            className="animate-pet-swing [transform-box:view-box] motion-reduce:animate-none"
+          >
+            {swordPixels.map(({ x, y, fill }) => (
+              <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className={fill} />
+            ))}
+          </g>
+        )}
         <g className={cn("fill-ink dark:fill-foreground", mood === "awake" && "animate-pet-blink [transform-box:fill-box] origin-center")}>
           {(reading ? readingEyes : eyes[mood]).map(([x, y]) => (
             <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} />

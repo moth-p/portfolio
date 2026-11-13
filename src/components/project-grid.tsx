@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 
 import { LaptopMockup } from "@/components/laptop-mockup"
+import { PixelNumber } from "@/components/pixel-icons"
 import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
@@ -51,7 +52,7 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
         ref={list}
         className="mt-[clamp(36px,7vh,80px)] grid grid-cols-4 gap-x-[18px] gap-y-[clamp(40px,5vw,64px)] max-tab:grid-cols-2 max-phone:grid-cols-1"
       >
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <li
             key={project.id}
             data-id={project.id}
@@ -70,6 +71,13 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
                   sizes="(max-width: 520px) 100vw, (max-width: 800px) 50vw, 25vw"
                   laptopClassName="transition-[scale] duration-700 ease-soft group-hover:scale-[1.035]"
                 />
+                {/* The project's number in pixels, in the top left corner */}
+                <span
+                  aria-hidden="true"
+                  className="absolute top-[clamp(14px,1.4vw,22px)] left-[clamp(16px,1.6vw,24px)] block h-[clamp(22px,2vw,30px)] max-phone:top-3 max-phone:left-3.5"
+                >
+                  <PixelNumber value={String(index + 1).padStart(2, "0")} />
+                </span>
               </div>
               <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight">
                 <span className="link-underline">{project.title}</span>
