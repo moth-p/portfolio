@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { ProjectDetail } from "@/components/project-detail"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import { getNextProject, getProject, projects } from "@/data/projects"
+import { getAdjacentProjects, getProject, projects } from "@/data/projects"
 
 export const dynamicParams = false
 
@@ -25,8 +25,8 @@ export default async function ProjectPage({ params }: PageProps<"/project/[id]">
 
   return (
     <main className="pt-header">
-      <SiteHeader detail />
-      <ProjectDetail project={project} next={getNextProject(id)} />
+      <SiteHeader active="projects" />
+      <ProjectDetail project={project} {...getAdjacentProjects(id)} />
       <SiteFooter />
     </main>
   )

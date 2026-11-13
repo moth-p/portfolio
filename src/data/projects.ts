@@ -9,7 +9,13 @@ export type Project = {
   image: string
   video: string
   color: string
-  services: string[]
+  techStack: string[]
+  /** What I was responsible for on the project */
+  duties: string[]
+  /** Repository URL; leave out when there isn't a public one */
+  github?: string
+  /** Live site URL; leave out when there isn't a public one */
+  website?: string
 }
 
 export const projects: Project[] = [
@@ -25,7 +31,12 @@ export const projects: Project[] = [
     image: "/projects/sma-monitor/cover.png",
     video: "/projects/sma-monitor/preview.mp4",
     color: "#cccccc",
-    services: ["React", "Autodesk Forge", "Chart.js", "shadcn/ui"],
+    techStack: ["React", "Autodesk Forge", "Chart.js", "shadcn/ui"],
+    duties: [
+      "Built the dashboard UI in React with shadcn/ui",
+      "Integrated the Autodesk Forge 3D viewer and kept device popovers anchored while the camera orbits",
+      "Wired live device metrics into Chart.js charts",
+    ],
   },
   {
     id: "long-term-care",
@@ -39,7 +50,12 @@ export const projects: Project[] = [
     image: "/projects/long-term-care/cover.png",
     video: "/projects/long-term-care/preview.mp4",
     color: "#d9d8d5",
-    services: ["React", "Redux Toolkit", "Leaflet", "Recharts"],
+    techStack: ["React", "TypeScript", "Vite", "Redux Toolkit", "React Router", "Tailwind CSS", "shadcn/ui", "Leaflet", "Recharts", "ESLint"],
+    duties: [
+      "Built the multi-institution dashboard in React",
+      "Managed shared filters and institution data with Redux Toolkit",
+      "Built the Leaflet map and Recharts charts for occupancy, residents, diets and dispatch",
+    ],
   },
   {
     id: "mixxtopia",
@@ -53,7 +69,12 @@ export const projects: Project[] = [
     image: "/projects/mixxtopia/cover.png",
     video: "/projects/mixxtopia/preview.mp4",
     color: "#eee8d0",
-    services: ["React", "GSAP", "three.js", "Tailwind CSS"],
+    techStack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Animate.css", "GSAP", "three.js", "p5.js", "Iconify"],
+    duties: [
+      "Designed and built the blueprint HUD and design-token system with light and dark themes",
+      "Choreographed the boot sequence and six scroll-linked scenes with GSAP",
+      "Built the 3D album ring and submarine flight in three.js",
+    ],
   },
   {
     id: "iot-monitor",
@@ -67,7 +88,12 @@ export const projects: Project[] = [
     image: "/projects/iot-monitor/cover.png",
     video: "/projects/iot-monitor/preview.mp4",
     color: "#d2d2d6",
-    services: ["React", "MapLibre GL", "deck.gl", "Express"],
+    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "deck.gl", "three.js", "ESLint"],
+    duties: [
+      "Built the 2.5D/3D map view with MapLibre GL and deck.gl",
+      "Raised factory floor plans and machine markers out of the vector map",
+      "Built popover cards for live readings and anomaly alerts, fed by an Express API",
+    ],
   },
   {
     id: "gamehub",
@@ -81,7 +107,12 @@ export const projects: Project[] = [
     image: "/projects/gamehub/cover.png",
     video: "/projects/gamehub/preview.mp4",
     color: "#787878",
-    services: ["Next.js", "RAWG API", "Tailwind CSS", "shadcn/ui"],
+    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "ESLint"],
+    duties: [
+      "Designed and built the pixel-art UI with Tailwind CSS and shadcn/ui",
+      "Built search, filter, sort and ranking over the RAWG API",
+      "Proxied the RAWG API through Next.js so the key stays on the server",
+    ],
   },
 ]
 
@@ -92,7 +123,11 @@ export function getProject(id: string) {
   return projects.find((project) => project.id === id)
 }
 
-export function getNextProject(id: string) {
+// The projects either side of `id`, wrapping around the list
+export function getAdjacentProjects(id: string) {
   const index = projects.findIndex((project) => project.id === id)
-  return projects[(index + 1) % projects.length]
+  return {
+    previous: projects[(index - 1 + projects.length) % projects.length],
+    next: projects[(index + 1) % projects.length],
+  }
 }

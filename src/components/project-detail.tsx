@@ -1,118 +1,129 @@
 import Link from "next/link"
-import type { CSSProperties } from "react"
 
 import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { LaptopMockup } from "@/components/laptop-mockup"
+import { TitlePet } from "@/components/pixel-pet"
 import { projects, type Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
-const processCards = [
-  {
-    label: "01 — Clarity",
-    text: "Remove the noise until the central idea has room to breathe.",
-    card: "bg-footer text-footer-foreground",
-    labelColor: "text-border",
-    shape: "shape-rings -right-[70px] -bottom-[120px] size-[360px] rounded-full border border-muted-foreground",
-  },
-  {
-    label: "02 — Character",
-    text: "Build a distinct language from a small set of memorable moves.",
-    card: "bg-highlight text-ink",
-    labelColor: "text-ink-muted",
-    shape: "-right-[45px] -bottom-[70px] h-[330px] w-[270px] -rotate-12 rounded-t-[140px] border-2 border-ink",
-  },
-  {
-    label: "03 — System",
-    text: "Make every piece useful on its own and stronger together.",
-    card: "border border-border bg-secondary",
-    labelColor: "text-muted-foreground",
-    shape: "shape-frame -right-[30px] -bottom-[25px] size-[280px] rotate-[24deg] rounded-[45px] border border-muted-foreground",
-  },
-]
-
 const label = "text-[10px] tracking-[0.1em] uppercase"
+// Pill buttons laid over the cover panel. Back to the list is the same outlined pill, filled light yellow
+// and turning black on hover, in both themes.
+const panelButton =
+  "absolute z-[1] flex max-w-[calc(50%-16px)] items-center rounded-full font-sans transition-colors duration-[250ms]"
+const backButton =
+  "gap-2.5 border border-ink bg-highlight py-2.5 pr-4 pl-3 text-xs text-ink hover:bg-ink hover:text-highlight max-phone:py-2 max-phone:text-[11px]"
+const pageButton =
+  "gap-2.5 border border-ink bg-background/80 py-2.5 text-xs text-ink backdrop-blur-sm hover:border-ink hover:bg-highlight hover:text-ink dark:border-border dark:text-foreground dark:hover:border-ink dark:hover:text-ink max-phone:py-2 max-phone:text-[11px]"
+const panelInset = "clamp(12px,1.6vw,20px)"
 
-export function ProjectDetail({ project, next }: { project: Project; next: Project }) {
+export function ProjectDetail({ project, previous, next }: { project: Project; previous: Project; next: Project }) {
   return (
     <>
-      <section className="grid min-h-[475px] grid-cols-12 items-end px-gutter pt-[90px] pb-[55px] max-phone:min-h-[420px]">
-        <div className="col-span-2 flex flex-col gap-[7px] self-start pt-3 text-[10px] tracking-[0.08em] text-muted-foreground uppercase max-tab:col-span-12">
-          <span>
-            {project.number} / {String(projects.length).padStart(2, "0")}
-          </span>
-          <span>{project.category}</span>
-        </div>
-        <FadeInUp as="h1" className="col-start-3 col-end-12 font-serif text-[clamp(76px,10vw,150px)] leading-[0.78] font-normal tracking-[-0.055em] max-tab:col-span-12 max-tab:mt-[45px] max-phone:text-[68px] max-phone:leading-[0.88]">
-          {project.title}
-        </FadeInUp>
-        <p className="col-start-8 col-end-13 mt-[50px] text-[clamp(17px,1.6vw,23px)] leading-[1.4] max-tab:col-start-4 max-phone:col-start-2 max-phone:mt-[45px]">
-          {project.summary}
-        </p>
-      </section>
-
-      <section
-        className="mockup-panel mx-gutter rounded-[32px] p-[clamp(20px,3vw,48px)] max-phone:rounded-[22px]"
-        style={{ "--panel": project.color } as CSSProperties}
-      >
-        <div className="relative h-[min(70vw,740px)] max-phone:h-[110vw]">
-          <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="100vw" preload />
-        </div>
-      </section>
-
-      <section className="grid grid-cols-12 px-gutter py-[clamp(90px,12vw,170px)]">
-        <div className="col-span-3 grid grid-cols-2 gap-5 max-tab:col-span-12 max-tab:mb-[70px]">
-          <div className="border-t border-border pt-[13px]">
-            <span className={cn(label, "text-muted-foreground")}>Year</span>
-            <p className="mt-[9px] text-xs">{project.year}</p>
-          </div>
-          <div className="border-t border-border pt-[13px]">
-            <span className={cn(label, "text-muted-foreground")}>Services</span>
-            {project.services.map((service) => (
-              <p key={service} className="mt-[9px] text-xs">
-                {service}
-              </p>
-            ))}
-          </div>
-        </div>
-        <div className="col-start-6 col-end-13 max-tab:col-start-2 max-phone:col-start-1">
-          <span className={cn(label, "text-muted-foreground")}>The idea</span>
-          <FadeInUp as="h2" className="mt-[27px] text-[clamp(34px,4.2vw,62px)] leading-[1.12] font-medium tracking-wide">
-            {project.description}
-          </FadeInUp>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-12 gap-[18px] px-gutter pb-[clamp(100px,13vw,180px)]">
-        {processCards.map((card) => (
-          <div
-            key={card.label}
-            className={cn(
-              "relative col-span-4 min-h-[530px] overflow-hidden rounded-[28px] p-7 max-tab:col-span-12 max-tab:min-h-[430px] max-phone:min-h-[390px]",
-              card.card,
-            )}
+      {/* Everything about the project fits in the first screen: recording on the left, details on the right */}
+      <section className="grid min-h-[calc(100svh-var(--spacing-header))] grid-cols-12 gap-[clamp(24px,3vw,56px)] px-gutter py-[clamp(20px,4vh,48px)] max-tab:min-h-0 max-tab:grid-cols-1">
+        <div className="relative col-span-6 min-h-[320px] overflow-hidden rounded-[26px] mockup-panel max-tab:col-span-1 max-tab:aspect-[16/11] max-tab:min-h-0 max-phone:aspect-[4/3.6] max-phone:rounded-[18px]">
+          <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="(max-width: 800px) 100vw, 60vw" preload className="max-tab:py-[68px] max-phone:py-[58px]" />
+          <Link
+            href="/works"
+            style={{ top: panelInset, left: panelInset }}
+            className={cn(panelButton, backButton)}
           >
-            <span className={cn(label, card.labelColor)}>{card.label}</span>
-            <p className="relative z-[2] mt-5 max-w-[290px] font-serif text-[28px] leading-[1.08]">{card.text}</p>
-            <div className={cn("absolute", card.shape)} />
-          </div>
-        ))}
-      </section>
+            <ArrowIcon direction="left" className="w-4" />
+            All projects
+          </Link>
+          <nav aria-label="More projects">
+            <Link
+              href={`/project/${previous.id}`}
+              rel="prev"
+              style={{ bottom: panelInset, left: panelInset }}
+              className={cn(panelButton, pageButton, "pr-4 pl-3")}
+            >
+              <ArrowIcon direction="left" className="w-4" />
+              <span className="truncate">
+                <span className="sr-only">Previous project: </span>
+                {previous.title}
+              </span>
+            </Link>
+            <Link
+              href={`/project/${next.id}`}
+              rel="next"
+              style={{ bottom: panelInset, right: panelInset }}
+              className={cn(panelButton, pageButton, "pr-3 pl-4")}
+            >
+              <span className="truncate">
+                <span className="sr-only">Next project: </span>
+                {next.title}
+              </span>
+              <ArrowIcon className="w-4" />
+            </Link>
+          </nav>
+        </div>
 
-      <Link
-        href={`/project/${next.id}`}
-        className="group grid w-full grid-cols-12 items-center border-t border-border px-gutter py-[70px] text-left"
-      >
-        <span className="col-span-2 text-[11px] text-muted-foreground uppercase max-tab:col-span-3 max-phone:col-span-12 max-phone:mb-5">
-          Next project
-        </span>
-        <strong className="col-start-3 col-end-11 font-serif text-[clamp(45px,6vw,85px)] font-normal max-tab:col-start-4 max-phone:col-start-1">
-          {next.title}
-        </strong>
-        <span className="col-start-12 flex size-[54px] max-phone:col-start-11 max-phone:col-end-13 max-phone:justify-self-end items-center justify-center rounded-full border border-border bg-background transition duration-[220ms] group-hover:translate-x-[5px] group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-highlight dark:group-hover:text-ink">
-          <ArrowIcon />
-        </span>
-      </Link>
+        <div className="col-span-6 flex flex-col justify-center gap-[clamp(18px,3.4vh,36px)] max-tab:col-span-1">
+          <div>
+            <span className={cn(label, "text-muted-foreground")}>
+              {project.number} / {String(projects.length).padStart(2, "0")} · {project.category} · {project.year}
+            </span>
+            <div className="mt-3 flex items-end gap-[clamp(14px,1.6vw,24px)]">
+              <FadeInUp
+                as="h1"
+                className="text-[clamp(40px,4.6vw,72px)] leading-[0.95] font-medium max-phone:text-[clamp(36px,11vw,52px)]"
+              >
+                {project.title}
+              </FadeInUp>
+              <TitlePet height={56} className="max-phone:hidden" />
+            </div>
+          </div>
+
+          <p className="text-[clamp(15px,1.15vw,18px)] leading-[1.5]">{project.description}</p>
+
+          <div>
+            <span className={cn(label, "text-muted-foreground")}>Tech stack</span>
+            <ul className="mt-2.5 flex flex-wrap gap-2">
+              {project.techStack.map((tech) => (
+                <li key={tech} className="rounded-full border border-border px-3 py-1 text-xs">
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <dl className="grid grid-cols-2 gap-5">
+            {[
+              { name: "GitHub", href: project.github },
+              { name: "Website", href: project.website },
+            ].map((link) => (
+              <div key={link.name} className="min-w-0 border-t border-border pt-[13px]">
+                <dt className={cn(label, "text-muted-foreground")}>{link.name}</dt>
+                <dd className="mt-2 text-sm">
+                  {link.href ? (
+                    <a href={link.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
+                      <span className="link-underline break-all">{link.href.replace(/^https?:\/\//, "")}</span>
+                      <ArrowIcon className="w-3.5 -rotate-45" />
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div>
+            <span className={cn(label, "text-muted-foreground")}>My role</span>
+            <ul className="mt-2.5 flex flex-col gap-1.5 text-sm leading-snug">
+              {project.duties.map((duty) => (
+                <li key={duty} className="flex gap-2.5">
+                  <span aria-hidden="true" className="mt-[0.55em] size-1.5 flex-none rounded-full bg-highlight" />
+                  {duty}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
     </>
   )
 }

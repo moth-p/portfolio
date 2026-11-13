@@ -229,3 +229,22 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
     </div>
   )
 }
+
+// The pet sitting beside a page title, scaled to `height`; clicking it recharges it.
+export function TitlePet({ height, className }: { height: number; className?: string }) {
+  const { mood, hopping, recharge } = usePetEnergy()
+  const scale = height / PET_HEIGHT
+  return (
+    <button
+      type="button"
+      onClick={recharge}
+      aria-label="Recharge the pet"
+      style={{ width: PET_WIDTH * scale, height }}
+      className={cn("relative flex-none", className)}
+    >
+      <span className="absolute top-0 left-0 origin-top-left" style={{ scale }}>
+        <PetSprite mood={mood} hopping={hopping} />
+      </span>
+    </button>
+  )
+}

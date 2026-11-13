@@ -142,6 +142,8 @@
   /* Laptop mockup around project screenshots: the screen bezel and the aluminium body, the same in both themes */
   --device: #1c1c1c;
   --device-body: #b9b8b5;
+  /* Background of the panels around project covers */
+  --cover: #a8a7a4;
 }
 
 [data-theme='dark'] {
@@ -151,6 +153,7 @@
   --border: #787878;
   --secondary: #787878;
   --section: #2a2a2a;
+  --cover: var(--ink-muted);
 }
 
 @layer base {
@@ -219,7 +222,7 @@
 
 /* Panel behind a laptop mockup: the project's colour (--panel), else a mid grey; the same in both themes */
 @utility mockup-panel {
-  background-color: var(--panel, var(--ink-muted));
+  background-color: var(--panel, var(--cover));
 }
 
 /* Underline that grows in from the left on hover / when active */
