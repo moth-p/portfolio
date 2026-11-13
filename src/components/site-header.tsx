@@ -4,7 +4,19 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 const navLink = "link-underline py-2.5 text-[13px]"
 
-export function SiteHeader({ detail = false }: { detail?: boolean }) {
+const navItems = [
+  { id: "home", label: "Home", href: "/" },
+  { id: "works", label: "Works", href: "/works" },
+] as const
+
+export function SiteHeader({
+  detail = false,
+  active,
+}: {
+  detail?: boolean
+  // The nav item for the current page, kept underlined.
+  active?: (typeof navItems)[number]["id"]
+}) {
   return (
     <header className="fixed inset-x-0 top-0 z-30 grid h-header grid-cols-[1fr_auto_1fr] items-center border-b border-border bg-background/92 px-gutter backdrop-blur-[14px] max-tab:grid-cols-[1fr_auto]">
       {/* Empty first column keeps the nav centred on desktop */}
@@ -18,14 +30,11 @@ export function SiteHeader({ detail = false }: { detail?: boolean }) {
             Back to work
           </Link>
         ) : (
-          <>
-            <a className={navLink} href="#work" data-active>
-              Work
-            </a>
-            <a className={navLink} href="#about">
-              About
-            </a>
-          </>
+          navItems.map((item) => (
+            <Link key={item.id} className={navLink} href={item.href} data-active={item.id === active || undefined}>
+              {item.label}
+            </Link>
+          ))
         )}
       </nav>
       <div className="flex items-center gap-[22px] justify-self-end max-tab:ml-5 max-phone:ml-3">

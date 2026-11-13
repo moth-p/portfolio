@@ -65,14 +65,24 @@ export function Projects({
 
   return (
     <div className="flex h-svh flex-col px-gutter pt-[calc(var(--spacing-header)+clamp(28px,7vh,90px))] pb-[clamp(24px,5vh,56px)] max-tab:pt-[calc(var(--spacing-header)+clamp(20px,4vh,44px))]">
+      {/* The pet walks to just right of the title and button row (projects-pet-spot), so it never covers the button */}
       <div className={cn("mb-[clamp(20px,4vh,44px)]", motionClass[motion])}>
         <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">Selected work</span>
-        <h2
-          id="projects-title"
-          className="w-fit text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
-        >
-          Projects
-        </h2>
+        <div id="projects-pet-spot" className="flex w-fit items-center gap-[clamp(14px,1.6vw,24px)]">
+          <h2
+            id="projects-title"
+            className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
+          >
+            Projects
+          </h2>
+          <Link
+            href="/works"
+            aria-label="View all projects"
+            className="flex flex-none items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[11px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink max-phone:size-9 max-phone:justify-center max-phone:p-0"
+          >
+            <span className="max-phone:hidden">All projects</span> <ArrowIcon className="w-4" />
+          </Link>
+        </div>
       </div>
 
       {/*
@@ -141,7 +151,7 @@ export function Projects({
                     </p>
                     <Link
                       href={href}
-                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[11px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background max-tab:mt-3"
+                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[11px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink max-tab:mt-3"
                     >
                       View project <ArrowIcon className="w-4" />
                     </Link>

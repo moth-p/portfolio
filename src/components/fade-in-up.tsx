@@ -15,7 +15,7 @@ import {
 
 import { cn } from "@/lib/utils"
 
-type FadeInUpProps<T extends ElementType> = { as?: T } & ComponentPropsWithoutRef<T>
+type FadeInUpProps<T extends ElementType> = { as?: T; play?: boolean } & ComponentPropsWithoutRef<T>
 
 // Split text into word units; inline elements (e.g. <em>) stay whole as a single unit.
 function splitWords(children: ReactNode, unitClass: string): ReactNode {
@@ -44,11 +44,14 @@ function splitWords(children: ReactNode, unitClass: string): ReactNode {
   })
 }
 
-// Animate.css fadeInUp, played line by line each time the element scrolls into view.
-export function FadeInUp<T extends ElementType = "div">({ as, children, ...props }: FadeInUpProps<T>) {
+// Animate.css fadeInUp, played line by line each time the element scrolls into view, or whenever `play` turns
+// true when the caller controls it.
+export function FadeInUp<T extends ElementType = "div">({ as, play, children, ...props }: FadeInUpProps<T>) {
   const Component: ElementType = as ?? "div"
   const ref = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(false)
+  const [inView, setInView] = useState(false)
+  const controlled = play !== undefined
+  const visible = controlled ? play : inView
 
   // Tag each word with its rendered line index; re-measure when the width changes.
   useEffect(() => {
@@ -76,17 +79,17 @@ export function FadeInUp<T extends ElementType = "div">({ as, children, ...props
   // Play on entering the viewport, reset on leaving so it replays next time.
   useEffect(() => {
     const element = ref.current
-    if (!element) return
+    if (!element || controlled) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.intersectionRatio >= 0.2) setVisible(true)
-        else if (!entry.isIntersecting) setVisible(false)
+        if (entry.intersectionRatio >= 0.2) setInView(true)
+        else if (!entry.isIntersecting) setInView(false)
       },
       { threshold: [0, 0.2] },
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [])
+  }, [controlled])
 
   // Each line starts 120ms after the one above it.
   const unitClass = cn(

@@ -177,7 +177,12 @@ export function usePetEnergy() {
   return { energy, mood, hopping, recharge }
 }
 
-// Energy line and recharge button, shown under the pet in the hero.
+const ENERGY_BLOCKS = 10
+// A 3px pixel frame drawn by four offset shadows, which leave its corners notched; the margin keeps it in the box.
+const pixelFrame =
+  "mx-[3px] shadow-[0_-3px_var(--foreground),0_3px_var(--foreground),-3px_0_var(--foreground),3px_0_var(--foreground)]"
+
+// Energy bar and recharge button, shown under the pet in the hero.
 export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { className?: string }) {
   return (
     <div className={cn("flex w-[200px] flex-col gap-3 bg-background max-phone:w-[170px]", className)}>
@@ -187,27 +192,37 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
         </span>
         <span className="text-[15px] tabular-nums">{energy}%</span>
       </div>
+      {/* A pixel frame around one block per started tenth */}
       <div
         role="meter"
         aria-label="Pet energy"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={energy}
-        className="relative h-px w-full bg-border"
+        className={cn("flex gap-[3px] p-[3px]", pixelFrame)}
       >
-        <div
-          className={cn(
-            "absolute inset-y-0 left-0 -my-px transition-[width] duration-700 ease-soft",
-            mood === "awake" ? "bg-foreground" : "bg-destructive",
-          )}
-          style={{ width: `${energy}%` }}
-        />
+        {Array.from({ length: ENERGY_BLOCKS }, (_, index) => (
+          <span
+            key={index}
+            className={cn(
+              "h-[9px] flex-1",
+              index < Math.ceil((energy / 100) * ENERGY_BLOCKS)
+                ? mood === "awake"
+                  ? "bg-foreground"
+                  : "bg-destructive"
+                : "bg-border",
+            )}
+          />
+        ))}
       </div>
       <button
         type="button"
         onClick={recharge}
         disabled={energy === 100}
-        className="mt-1 flex w-fit items-center gap-2.5 self-center rounded-full border border-foreground px-[18px] py-2.5 text-[13px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background disabled:pointer-events-none disabled:opacity-40 max-phone:self-start"
+        className={cn(
+          "mt-4 flex w-fit items-center self-center px-[18px] py-2 text-[13px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink active:translate-y-[3px] disabled:pointer-events-none disabled:opacity-40 max-phone:self-start",
+          pixelFrame,
+        )}
       >
         Recharge
       </button>

@@ -32,14 +32,6 @@ const delay = (order: number) => ({ animationDelay: `${order * 120}ms` });
 // shows, so there the words use the text colour.
 const wordClass =
   "block px-[0.08em] font-serif text-[clamp(56px,8vw,128px)] leading-[0.9] font-normal whitespace-nowrap italic text-foreground transition-colors duration-700 dark:text-highlight max-phone:text-[clamp(50px,15vw,70px)]";
-// Beside the work flow the words step back to a lighter tone.
-const splitWordClass = "text-foreground/35 dark:text-highlight/40";
-
-// The split move: shift left by this share of the slogan's width (to the centre of the left 5 of 12 columns)
-// and scale about its centre. The hero uses these to keep the pet on its spot; keep them in step with the
-// classes below.
-export const SLOGAN_SPLIT = { shift: 0.29167, scale: 0.75 };
-
 // A thin eight-armed star sitting on the oval line.
 function Star({ className }: { className?: string }) {
   return (
@@ -56,28 +48,18 @@ function Star({ className }: { className?: string }) {
   );
 }
 
-// With `split`, the slogan slides into the centre of the left part (5 of 12 columns) to share the screen with
-// the work flow; on tablet and phone there is no room, so it fades away instead.
 export function Slogan({
   motion,
-  split,
   active,
   playKey,
 }: {
   motion: SloganMotion;
-  split: boolean;
   active: boolean;
   playKey: number;
 }) {
   return (
-    <div
-      id="slogan-stage"
-      className={cn(
-        "flex h-svh flex-col items-center justify-center px-gutter transition-[translate,scale,opacity] duration-[900ms] ease-soft motion-reduce:transition-none",
-        split && "-translate-x-[29.167%] scale-[0.75] max-tab:translate-x-0 max-tab:scale-100 max-tab:opacity-0",
-      )}
-    >
-      <span style={delay(0)} className={cn(wordClass, split && splitWordClass, motionClass[motion])}>
+    <div className="flex h-svh flex-col items-center justify-center px-gutter">
+      <span style={delay(0)} className={cn(wordClass, motionClass[motion])}>
         Solution
       </span>
 
@@ -107,7 +89,7 @@ export function Slogan({
         />
       </div>
 
-      <span style={delay(2)} className={cn(wordClass, split && splitWordClass, motionClass[motion])}>
+      <span style={delay(2)} className={cn(wordClass, motionClass[motion])}>
         Provider
       </span>
     </div>

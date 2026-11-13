@@ -23,7 +23,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(nextTheme)}
       aria-label={label}
       title={label}
-      className="size-[42px] rounded-full border-border bg-background text-foreground shadow-none duration-[220ms] hover:rotate-12 hover:bg-foreground hover:text-background max-phone:size-[38px] dark:border-border dark:bg-background dark:hover:bg-foreground"
+      className="size-[42px] rounded-full border-border bg-background text-foreground shadow-none duration-[220ms] hover:rotate-12 hover:bg-foreground hover:text-background max-phone:size-[38px] dark:border-border dark:bg-background dark:hover:bg-highlight dark:hover:text-ink"
     >
       {/* Icon is picked by CSS so it is correct before hydration */}
       <SunIcon className="size-[18px] dark:hidden" />
