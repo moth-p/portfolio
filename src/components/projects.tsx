@@ -67,22 +67,29 @@ export function Projects({
     <div className="flex h-svh flex-col px-gutter pt-[calc(var(--spacing-header)+clamp(28px,7vh,90px))] pb-[clamp(24px,5vh,56px)] max-tab:pt-[calc(var(--spacing-header)+clamp(20px,4vh,44px))]">
       {/* The pet walks to just right of the title and button row (projects-pet-spot), so it never covers the button */}
       <div className={cn("mb-[clamp(20px,4vh,44px)]", motionClass[motion])}>
-        <span className="mb-[14px] block text-[11px] tracking-[0.12em] text-muted-foreground uppercase">Selected work</span>
         <div id="projects-pet-spot" className="flex w-fit items-center gap-[clamp(14px,1.6vw,24px)]">
           <h2
             id="projects-title"
             className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
           >
-            Projects
+            Developing
           </h2>
           <Link
             href="/projects"
             aria-label="View all projects"
             className="flex flex-none items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-phone:size-9 max-phone:justify-center max-phone:p-0"
           >
-            <span className="max-phone:hidden">More</span> <ArrowIcon className="w-4" />
+            <span className="max-phone:hidden">
+              More
+              <span lang="zh-Hant" className="ml-2 text-[0.8em] font-normal tracking-[0.15em]">
+                看更多
+              </span>
+            </span> <ArrowIcon className="w-4" />
           </Link>
         </div>
+        <p lang="zh-Hant" className="mt-[clamp(14px,1.6vw,22px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground">
+          開發涵蓋 IOT 企業後台系統與品牌形象網站。
+        </p>
       </div>
 
       {/*
@@ -143,17 +150,21 @@ export function Projects({
                     />
                   </Link>
                   <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">
-                    <span className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
-                      {project.category} · {project.year}
-                    </span>
-                    <p className="mt-3 text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:mt-1.5 max-tab:text-[15px]">
-                      {project.summary}
+                    <p className="text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:text-[15px]">{project.summary}</p>
+                    <p lang="zh-Hant" className="mt-2 text-[clamp(13px,1.1vw,17px)] leading-normal tracking-[0.15em] text-muted-foreground">
+                      {project.summaryTw}
                     </p>
                     <Link
                       href={href}
                       className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3"
                     >
-                      View<ArrowIcon className="w-4" />
+                      <span>
+                        View
+                        <span lang="zh-Hant" className="ml-2 text-[0.8em] font-normal tracking-[0.15em]">
+                          查看
+                        </span>
+                      </span>
+                      <ArrowIcon className="w-4" />
                     </Link>
                   </div>
                 </div>

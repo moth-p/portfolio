@@ -63,7 +63,7 @@ function FlowNode({
       style={{ opacity: shown, transform: `translateY(${(1 - shown) * 14}px)` }}
       className={cn(
         follow,
-        "relative flex w-full items-center justify-center rounded-full border border-ink bg-highlight px-14 py-[clamp(8px,1.4vh,13px)] text-center text-[clamp(16px,1.45vw,21px)] leading-tight text-ink",
+        "relative flex w-full items-center justify-center rounded-full border border-ink bg-highlight px-14 py-[clamp(8px,1.4vh,13px)] text-center text-[clamp(16px,1.45vw,21px)] leading-tight text-ink max-tab:py-1.5",
         // Side-by-side branch nodes stack the index above the title to fit the half width.
         compact && "h-full flex-col gap-0.5 rounded-[28px] px-3 text-[clamp(15px,1.3vw,19px)]",
       )}
@@ -77,7 +77,12 @@ function FlowNode({
       >
         {step.index}
       </span>
-      {step.title}
+      <span className={cn("flex flex-col", !compact && "gap-1.5")}>
+        {step.title}
+        <span lang="zh-Hant" className="text-[0.62em] tracking-[0.15em] opacity-70">
+          {step.titleTw}
+        </span>
+      </span>
     </div>
   )
 }
@@ -253,7 +258,12 @@ export function Workflow({
               <Accordion.Header>
                 <Accordion.Trigger className="group flex w-full cursor-pointer items-center gap-4 px-[clamp(24px,3.5vw,56px)] py-[clamp(12px,2.2vh,22px)] text-left text-[clamp(18px,1.6vw,24px)] leading-tight transition-colors data-[state=closed]:text-muted-foreground data-[state=closed]:hover:text-foreground max-tab:px-0 max-tab:py-2.5 max-tab:text-base">
                   <span className="w-10 flex-none text-[11px] tracking-[0.08em] tabular-nums opacity-70">{step.index}</span>
-                  <span className="flex-1">{step.title}</span>
+                  <span className="flex flex-1 flex-wrap items-baseline gap-x-3">
+                    {step.title}
+                    <span lang="zh-Hant" className="text-[0.62em] tracking-[0.15em] opacity-70">
+                      {step.titleTw}
+                    </span>
+                  </span>
                   {/* Plus that turns into a minus while open */}
                   <span aria-hidden="true" className="relative size-3 flex-none">
                     <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-current" />
@@ -267,9 +277,12 @@ export function Workflow({
                 <div className="absolute inset-x-0 top-0 flex h-(--open-size) flex-col justify-between pr-[clamp(24px,3.5vw,56px)] pb-[clamp(16px,3vh,32px)] pl-[calc(clamp(24px,3.5vw,56px)+56px)] max-tab:justify-start max-tab:px-0 max-tab:pb-3 max-tab:pl-14">
                   {/* The brief with its pixel icon floating off its bottom right corner, like the hero's */}
                   <div className="flex items-end gap-[clamp(16px,2vw,32px)]">
-                    <p className="max-w-[520px] text-[clamp(16px,1.4vw,22px)] leading-normal text-muted-foreground max-tab:text-sm">
-                      {step.brief}
-                    </p>
+                    <div className="max-w-[520px] text-[clamp(16px,1.4vw,22px)] leading-normal text-muted-foreground max-tab:text-sm">
+                      <p>{step.brief}</p>
+                      <p lang="zh-Hant" className="mt-2 text-[0.8em] tracking-[0.15em]">
+                        {step.briefTw}
+                      </p>
+                    </div>
                     {Icon && (
                       <div aria-hidden="true" className="w-[clamp(44px,4.4vw,72px)] flex-none max-tab:w-10">
                         <div style={{ animationDelay: `${-index}s` }} className="animate-float motion-reduce:animate-none">
@@ -278,10 +291,6 @@ export function Workflow({
                       </div>
                     )}
                   </div>
-                  <p className="mt-3 text-sm leading-normal">
-                    <span className="mr-2 text-[11px] tracking-[0.12em] text-muted-foreground uppercase">Output</span>
-                    {step.output}
-                  </p>
                 </div>
               </Accordion.Content>
             </Accordion.Item>

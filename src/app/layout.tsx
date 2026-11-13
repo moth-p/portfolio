@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
+import { Noto_Sans_TC } from "next/font/google"
 import localFont from "next/font/local"
 import type { ReactNode } from "react"
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { cn } from "@/lib/utils"
 
 import "animate.css"
 import "./globals.css"
@@ -15,6 +17,14 @@ const clashDisplay = localFont({
     { path: "./fonts/ClashDisplay-Semibold.woff2", weight: "600", style: "normal" },
   ],
   variable: "--font-clash-display",
+})
+
+// Traditional Chinese, picked up by the font stack for characters Clash Display lacks. Google serves CJK fonts in
+// unicode-range slices, so there is no subset to preload.
+const notoSansTC = Noto_Sans_TC({
+  weight: ["400", "500", "600"],
+  variable: "--font-noto-tc",
+  preload: false,
 })
 
 export const metadata: Metadata = {
@@ -33,7 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={clashDisplay.variable}
+      className={cn(clashDisplay.variable, notoSansTC.variable)}
       suppressHydrationWarning
     >
       <body>

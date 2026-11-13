@@ -78,7 +78,7 @@ const STOPS = [SLOGAN_AT + SOLVE_LEAD, FLOW_AT - SOLVE_LEAD, flowScroll(workflow
 const STOP_HOLD_MS = 350
 const STOP_HOLD_MAX_MS = 800
 
-// Entrance order: the title's lines fade in first, then the pixel icons and the pet together — all with fadeInUp.
+// Entrance order: the title's lines fade in first, then its Chinese line, the pixel icons and the pet together — all with fadeInUp.
 const TITLE_MS = 1100
 const PET_DELAY_MS = TITLE_MS
 
@@ -110,7 +110,7 @@ const heroIcons = [
   {
     name: "repeat",
     Icon: PixelRepeat,
-    className: "top-[47%] left-[53%] w-[clamp(55px,6vw,95px)] max-tab:left-[78%] max-phone:top-[25%] max-phone:left-[82%]",
+    className: "top-[43%] left-[53%] w-[clamp(50px,5.4vw,86px)] max-tab:left-[78%] max-phone:top-[25%] max-phone:left-[82%]",
     style: { animationDelay: "-3s", animationDuration: "7s" },
   },
 ]
@@ -329,8 +329,8 @@ export function Hero() {
           )}
         >
           <div className="col-span-12 flex justify-between pt-[clamp(38px,7vh,72px)] text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
-            <span>Independent designer</span>
-            <span className="max-tab:hidden">Based in Amsterdam</span>
+            <span>UI / UX DESIGN</span>
+            <span className="max-tab:hidden">Frontend Development</span>
           </div>
           {heroIcons.map(({ name, Icon, className, style }) => (
             // The outer box plays the entrance, the inner one floats, so the two animations don't clash.
@@ -347,25 +347,32 @@ export function Hero() {
           ))}
           {/* White text in difference mode reads as the inverse of whatever sits behind it: dark on the page, inverted over the icons.
               In dark mode it is plain light yellow instead. */}
-          <FadeInUp
-            as="h1"
-            id="hero-title"
-            className="z-[2] col-span-10 mt-[clamp(52px,8vh,100px)] mb-11 max-w-[900px] self-center text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium text-white mix-blend-difference dark:text-highlight dark:mix-blend-normal max-tab:col-span-12 max-tab:mt-[70px] max-tab:self-start max-tab:text-[clamp(58px,10.5vw,84px)] max-phone:text-[clamp(40px,13vw,68px)]"
-          >
-            Shape ideas into digital
-            experiences.
-          </FadeInUp>
-          <div className="z-[2] col-span-6 flex items-end justify-between self-end pb-12 max-tab:col-span-11 max-phone:col-span-12 max-phone:gap-[25px]">
-            <p className="max-w-[390px] text-[clamp(16px,1.4vw,20px)] leading-normal text-muted-foreground">
-              Brand and product designer partnering with thoughtful people to make useful, lasting things.
+          {/* No z-index on the wrapper: a stacking context here would cut the title's blend off from the icons. */}
+          <div className="col-span-10 mt-[clamp(52px,8vh,100px)] mb-11 self-center max-tab:col-span-12 max-tab:mt-[70px] max-tab:self-start">
+            <FadeInUp
+              as="h1"
+              id="hero-title"
+              className="relative z-[2] max-w-[900px] text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium text-white mix-blend-difference dark:text-highlight dark:mix-blend-normal max-tab:text-[clamp(58px,10.5vw,84px)] max-phone:text-[clamp(40px,13vw,68px)]"
+            >
+              Shape ideas into digital
+              experiences.
+            </FadeInUp>
+            <p
+              lang="zh-Hant"
+              style={{ animationDelay: `${TITLE_MS}ms` }}
+              className="animate__animated animate__fadeInUp relative z-[2] mt-[clamp(24px,2.8vw,40px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground"
+            >
+              為需求尋找解方，打造更好的數位體驗。
             </p>
+          </div>
+          <div className="z-[2] col-span-6 flex items-end justify-end self-end pb-12 max-tab:col-span-11 max-phone:col-span-12">
             <Button
               asChild
               variant="outline"
               size="icon"
               className="size-14 flex-none rotate-90 rounded-full border-border bg-background shadow-none duration-[220ms] hover:scale-106 hover:bg-highlight hover:text-ink dark:border-border dark:bg-background dark:hover:bg-highlight"
             >
-              <a href="#work" aria-label="See selected work">
+              <a href="#work" aria-label="See Selected Projects">
                 <ArrowIcon />
               </a>
             </Button>

@@ -7,7 +7,7 @@ import { PET_HEIGHT, PET_WIDTH, PetSprite } from "@/components/pixel-pet"
 import { cn } from "@/lib/utils"
 
 const links = [
-  { label: "More Projects", href: "/projects" },
+  { label: "More Projects", labelTw: "更多專案", href: "/projects" },
 ]
 
 // The last panel of the hero stage, shown the moment the work flow leaves (see Hero). `play` runs the
@@ -20,8 +20,17 @@ export function LinkSection({ play }: { play: boolean }) {
       <FadeInUp as="p" play={play} className="max-w-[16em] text-[clamp(38px,5vw,74px)] leading-[1.08] tracking-[-0.045em] max-phone:text-[clamp(28px,8.5vw,38px)]">
         Good design should feel{" "}
         <em className="rounded-full bg-highlight px-[0.3em] py-[0.02em] text-[0.85em] font-normal text-ink">obvious</em> in hindsight. I
-        bring strategy and interaction together to get there.
+        bring strategy to get there.
       </FadeInUp>
+      <p
+        lang="zh-Hant"
+        className={cn(
+          "mt-[clamp(18px,2.4vw,32px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground",
+          play ? "animate__animated animate__fadeInUp [animation-delay:300ms]" : "opacity-0",
+        )}
+      >
+        為需求尋找解方，打造更好的數位體驗。
+      </p>
       <div
         className={cn(
           "mt-20 flex items-center justify-center max-tab:mt-14",
@@ -52,7 +61,13 @@ export function LinkSection({ play }: { play: boolean }) {
               href={link.href}
               className="flex animate-wave-hit items-center gap-[15px] rounded-full border border-foreground py-3.5 pr-4 pl-5 text-[17px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink motion-reduce:animate-none max-phone:py-3 max-phone:pr-3.5 max-phone:pl-4 max-phone:text-[15px]"
             >
-              {link.label} <ArrowIcon className="w-4" />
+              <span>
+                {link.label}
+                <span lang="zh-Hant" className="ml-2 text-[0.8em] font-normal tracking-[0.15em]">
+                  {link.labelTw}
+                </span>
+              </span>
+              <ArrowIcon className="w-4" />
             </Link>
           ))}
         </div>

@@ -4,10 +4,12 @@ import { FadeInUp } from "@/components/fade-in-up"
 import { ArrowIcon } from "@/components/icons"
 import { LaptopMockup } from "@/components/laptop-mockup"
 import { TitlePet } from "@/components/pixel-pet"
-import { projects, type Project } from "@/data/projects"
+import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
 const label = "text-[10px] tracking-[0.1em] uppercase"
+// The Traditional Chinese beside a label, a touch larger so the characters stay legible.
+const labelTw = "ml-2 text-[11px] tracking-[0.15em]"
 // Pill buttons laid over the cover panel. Back to the list is the same outlined pill, filled light yellow
 // and turning black on hover, in both themes.
 const panelButton =
@@ -31,7 +33,12 @@ export function ProjectDetail({ project, previous, next }: { project: Project; p
             className={cn(panelButton, backButton)}
           >
             <ArrowIcon direction="left" className="w-4" />
-            All projects
+            <span>
+              Back
+              <span lang="zh-Hant" className="ml-2 text-[0.8em] font-normal tracking-[0.15em]">
+                返回
+              </span>
+            </span>
           </Link>
           <nav aria-label="More projects">
             <Link
@@ -63,10 +70,7 @@ export function ProjectDetail({ project, previous, next }: { project: Project; p
 
         <div className="col-span-6 flex flex-col justify-center gap-[clamp(18px,3.4vh,36px)] max-tab:col-span-1">
           <div>
-            <span className={cn(label, "text-muted-foreground")}>
-              {project.number} / {String(projects.length).padStart(2, "0")} · {project.category} · {project.year}
-            </span>
-            <div className="mt-3 flex items-end gap-[clamp(14px,1.6vw,24px)]">
+            <div className="flex items-end gap-[clamp(14px,1.6vw,24px)]">
               <FadeInUp
                 as="h1"
                 className="text-[clamp(40px,4.6vw,72px)] leading-[0.95] font-medium max-phone:text-[clamp(36px,11vw,52px)]"
@@ -77,10 +81,14 @@ export function ProjectDetail({ project, previous, next }: { project: Project; p
             </div>
           </div>
 
-          <p className="text-[clamp(15px,1.15vw,18px)] leading-[1.5]">{project.description}</p>
+          <p lang="zh-Hant" className="text-[clamp(15px,1.15vw,18px)] leading-[1.7] tracking-[0.1em]">
+            {project.descriptionTw}
+          </p>
 
           <div>
-            <span className={cn(label, "text-muted-foreground")}>Tech stack</span>
+            <span className={cn(label, "text-muted-foreground")}>
+              Tech stack<span lang="zh-Hant" className={labelTw}>技術棧</span>
+            </span>
             <ul className="mt-2.5 flex flex-wrap gap-2">
               {project.techStack.map((tech) => (
                 <li key={tech} className="rounded-full border border-border px-3 py-1 text-xs">
@@ -112,9 +120,11 @@ export function ProjectDetail({ project, previous, next }: { project: Project; p
           </dl>
 
           <div>
-            <span className={cn(label, "text-muted-foreground")}>My role</span>
-            <ul className="mt-2.5 flex flex-col gap-1.5 text-sm leading-snug">
-              {project.duties.map((duty) => (
+            <span className={cn(label, "text-muted-foreground")}>
+              My role<span lang="zh-Hant" className={labelTw}>負責項目</span>
+            </span>
+            <ul lang="zh-Hant" className="mt-2.5 flex flex-col gap-1.5 text-sm leading-snug tracking-[0.08em]">
+              {project.dutiesTw.map((duty) => (
                 <li key={duty} className="flex gap-2.5">
                   <span aria-hidden="true" className="mt-[0.55em] size-1.5 flex-none rounded-full bg-highlight" />
                   {duty}

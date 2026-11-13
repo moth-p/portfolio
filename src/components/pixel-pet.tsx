@@ -12,6 +12,8 @@ const STORAGE_KEY = "portfolio-pet"
 const HOP_MS = 700
 // Loading or reloading the home page wakes the pet at this level.
 const HOME_LOAD_LEVEL = 80
+// Recharging tops the energy up to this level; it never lowers a fuller charge.
+const RECHARGE_LEVEL = 80
 
 type Charge = { level: number; at: number }
 export type PetMood = "awake" | "tired" | "asleep"
@@ -234,7 +236,7 @@ export function usePetEnergy({ onHomePage = false }: { onHomePage?: boolean } = 
   const recharge = () => {
     const at = Date.now()
     setNow(at)
-    writeCharge({ level: 100, at })
+    if (energy < RECHARGE_LEVEL) writeCharge({ level: RECHARGE_LEVEL, at })
     setHopping(true)
   }
 
@@ -242,12 +244,24 @@ export function usePetEnergy({ onHomePage = false }: { onHomePage?: boolean } = 
 }
 
 const ENERGY_BLOCKS = 10
+// When the energy goes up (a recharge), the bar fills back one block per FILL_STEP_MS; when it drains, it drops at once.
+const FILL_STEP_MS = 120
 // A 3px pixel frame drawn by four offset shadows, which leave its corners notched; the margin keeps it in the box.
 const pixelFrame =
   "mx-[3px] shadow-[0_-3px_var(--foreground),0_3px_var(--foreground),-3px_0_var(--foreground),3px_0_var(--foreground)]"
 
 // Energy bar and recharge button, shown under the pet in the hero.
 export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { className?: string }) {
+  const blocks = Math.ceil((energy / 100) * ENERGY_BLOCKS)
+  const [filled, setFilled] = useState(blocks)
+  if (blocks < filled) setFilled(blocks)
+
+  useEffect(() => {
+    if (filled >= blocks) return
+    const timer = window.setTimeout(() => setFilled((count) => count + 1), FILL_STEP_MS)
+    return () => window.clearTimeout(timer)
+  }, [filled, blocks])
+
   return (
     <div className={cn("flex w-[200px] flex-col gap-3 bg-background max-phone:w-[170px]", className)}>
       <div className="flex items-baseline justify-between">
@@ -270,7 +284,7 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
             key={index}
             className={cn(
               "h-[9px] flex-1",
-              index < Math.ceil((energy / 100) * ENERGY_BLOCKS)
+              index < filled
                 ? mood === "awake"
                   ? "bg-foreground"
                   : "bg-destructive"
@@ -282,7 +296,7 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
       <button
         type="button"
         onClick={recharge}
-        disabled={energy === 100}
+        disabled={energy >= RECHARGE_LEVEL}
         className={cn(
           "mt-4 flex w-fit items-center self-center px-[18px] py-2 text-[13px] transition-colors duration-[250ms] hover:bg-highlight hover:text-ink active:translate-y-[3px] disabled:pointer-events-none disabled:opacity-40 max-phone:self-start",
           pixelFrame,

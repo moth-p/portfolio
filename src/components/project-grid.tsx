@@ -82,7 +82,9 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
               <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight">
                 <span className="link-underline">{project.title}</span>
               </span>
-              <p className="mt-2 text-sm leading-snug text-muted-foreground">{project.summary}</p>
+              <p lang="zh-Hant" className="mt-2 text-sm leading-normal tracking-[0.08em] text-muted-foreground">
+                {project.summaryTw}
+              </p>
             </Link>
           </li>
         ))}

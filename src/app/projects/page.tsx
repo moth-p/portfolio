@@ -24,7 +24,7 @@ export default function ProjectsPage() {
               as="h1"
               className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
             >
-              Projects List
+              Projects
             </FadeInUp>
           }
         />
