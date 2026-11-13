@@ -284,7 +284,7 @@ export function PetStatus({ energy, mood, recharge, className }: PetEnergy & { c
         onClick={recharge}
         disabled={energy === 100}
         className={cn(
-          "mt-4 flex w-fit items-center self-center px-[18px] py-2 text-[13px] transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink active:translate-y-[3px] disabled:pointer-events-none disabled:opacity-40 max-phone:self-start",
+          "mt-4 flex w-fit items-center self-center px-[18px] py-2 text-[13px] transition-colors duration-[250ms] hover:bg-highlight hover:text-ink active:translate-y-[3px] disabled:pointer-events-none disabled:opacity-40 max-phone:self-start",
           pixelFrame,
         )}
       >
@@ -313,5 +313,27 @@ export function TitlePet({ height, className }: { height: number; className?: st
         <PetSprite mood="awake" hopping={hopping} reading />
       </span>
     </button>
+  )
+}
+
+// The pet's body alone, without its sword, legs or motion: the mark at the start of the site header.
+// Stateless on purpose: calling usePetEnergy here would claim the home page's wake-up on load.
+const iconPixels = bodyPixels.filter(({ y }) => y < SPRITE.length - 1)
+
+export function PetIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox={`0 0 ${SWORD_X} ${SPRITE.length - 1}`}
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+      className={cn("h-full w-auto flex-none", className)}
+    >
+      {iconPixels.map(({ x, y, fill }) => (
+        <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className={fill} />
+      ))}
+      {eyes.awake.map(([x, y]) => (
+        <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} className="fill-ink dark:fill-foreground" />
+      ))}
+    </svg>
   )
 }

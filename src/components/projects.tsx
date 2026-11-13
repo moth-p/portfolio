@@ -78,7 +78,7 @@ export function Projects({
           <Link
             href="/projects"
             aria-label="View all projects"
-            className="flex flex-none items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink max-phone:size-9 max-phone:justify-center max-phone:p-0"
+            className="flex flex-none items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-phone:size-9 max-phone:justify-center max-phone:p-0"
           >
             <span className="max-phone:hidden">More</span> <ArrowIcon className="w-4" />
           </Link>
@@ -151,7 +151,7 @@ export function Projects({
                     </p>
                     <Link
                       href={href}
-                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-foreground hover:text-background dark:hover:bg-highlight dark:hover:text-ink max-tab:mt-3"
+                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3"
                     >
                       View<ArrowIcon className="w-4" />
                     </Link>

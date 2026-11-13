@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Instrument_Serif } from "next/font/google"
 import localFont from "next/font/local"
 import type { ReactNode } from "react"
 
@@ -18,13 +17,6 @@ const clashDisplay = localFont({
   variable: "--font-clash-display",
 })
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
-})
-
 export const metadata: Metadata = {
   title: {
     default: "Avery Vale",
@@ -41,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${clashDisplay.variable} ${instrumentSerif.variable}`}
+      className={clashDisplay.variable}
       suppressHydrationWarning
     >
       <body>

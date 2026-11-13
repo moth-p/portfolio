@@ -252,8 +252,8 @@ export function PixelFlag({ className }: { className?: string }) {
   return <PixelIcon sprite={flag} className={className} />
 }
 
-// A 3×5 pixel font for numbers.
-const digits: Record<string, string[]> = {
+// A 3×5 pixel font: digits, the capitals in use, and a narrow space.
+const pixelFont: Record<string, string[]> = {
   "0": ["bbb", "b.b", "b.b", "b.b", "bbb"],
   "1": [".b.", "bb.", ".b.", ".b.", "bbb"],
   "2": ["bbb", "..b", "bbb", "b..", "bbb"],
@@ -264,11 +264,19 @@ const digits: Record<string, string[]> = {
   "7": ["bbb", "..b", "..b", ".b.", ".b."],
   "8": ["bbb", "b.b", "bbb", "b.b", "bbb"],
   "9": ["bbb", "b.b", "bbb", "..b", "bbb"],
+  H: ["b.b", "b.b", "bbb", "b.b", "b.b"],
+  L: ["b..", "b..", "b..", "b..", "bbb"],
+  O: ["bbb", "b.b", "b.b", "b.b", "bbb"],
+  P: ["bbb", "b.b", "bbb", "b..", "b.."],
+  S: ["bbb", "b..", "bbb", "..b", "bbb"],
+  U: ["b.b", "b.b", "b.b", "b.b", "bbb"],
+  Y: ["b.b", "b.b", ".b.", ".b.", ".b."],
+  " ": ["..", "..", "..", "..", ".."],
 }
 
-// A number set in the pixel font, a cell apart, in the icons' colours. The SVG fills its height.
-export function PixelNumber({ value, className }: { value: string; className?: string }) {
-  const glyphs = [...value].map((digit) => digits[digit]).filter(Boolean)
-  const rows = digits["0"].map((_, y) => glyphs.map((glyph) => glyph[y]).join("."))
+// Text set in the pixel font (uppercased), a cell apart, in the icons' colours. The SVG fills its height.
+export function PixelText({ value, className }: { value: string; className?: string }) {
+  const glyphs = [...value.toUpperCase()].map((char) => pixelFont[char]).filter(Boolean)
+  const rows = pixelFont["0"].map((_, y) => glyphs.map((glyph) => glyph[y]).join("."))
   return <PixelIcon sprite={sprite(rows)} className={cn("h-full w-auto", className)} />
 }

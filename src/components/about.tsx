@@ -12,7 +12,7 @@ export function About() {
       </span>
       <FadeInUp as="p" className="col-start-3 col-end-11 text-[clamp(38px,5vw,74px)] leading-[1.08] tracking-[-0.045em] max-tab:col-span-12">
         Good design should feel{" "}
-        <em className="rounded-full bg-highlight px-[0.07em] font-serif font-normal italic">obvious</em> in hindsight. I
+        <em className="rounded-full bg-highlight px-[0.07em] font-medium">obvious</em> in hindsight. I
         bring strategy, identity, and interaction together to get there.
       </FadeInUp>
       <div className="col-start-9 col-end-13 mt-20 border-t border-border pt-[15px] max-tab:col-start-5 max-phone:col-start-2">

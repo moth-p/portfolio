@@ -363,7 +363,7 @@ export function Hero() {
               asChild
               variant="outline"
               size="icon"
-              className="size-14 flex-none rotate-90 rounded-full border-border bg-background shadow-none duration-[220ms] hover:scale-106 hover:bg-foreground hover:text-background dark:border-border dark:bg-background dark:hover:bg-highlight dark:hover:text-ink"
+              className="size-14 flex-none rotate-90 rounded-full border-border bg-background shadow-none duration-[220ms] hover:scale-106 hover:bg-highlight hover:text-ink dark:border-border dark:bg-background dark:hover:bg-highlight"
             >
               <a href="#work" aria-label="See selected work">
                 <ArrowIcon />

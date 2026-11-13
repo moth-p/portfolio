@@ -19,7 +19,7 @@ export function LinkSection({ play }: { play: boolean }) {
     <div className="flex h-full flex-col items-center justify-center px-gutter text-center">
       <FadeInUp as="p" play={play} className="max-w-[16em] text-[clamp(38px,5vw,74px)] leading-[1.08] tracking-[-0.045em] max-phone:text-[clamp(28px,8.5vw,38px)]">
         Good design should feel{" "}
-        <em className="rounded-full bg-highlight px-[0.3em] py-[0.02em] font-serif font-normal text-ink italic">obvious</em> in hindsight. I
+        <em className="rounded-full bg-highlight px-[0.3em] py-[0.02em] text-[0.85em] font-normal text-ink">obvious</em> in hindsight. I
         bring strategy and interaction together to get there.
       </FadeInUp>
       <div
@@ -50,7 +50,7 @@ export function LinkSection({ play }: { play: boolean }) {
             <Link
               key={link.href}
               href={link.href}
-              className="flex animate-wave-hit items-center gap-[15px] rounded-full border border-foreground py-3.5 pr-4 pl-5 text-[17px] font-semibold transition-colors duration-[250ms] hover:bg-foreground hover:text-background motion-reduce:animate-none dark:hover:bg-highlight dark:hover:text-ink max-phone:py-3 max-phone:pr-3.5 max-phone:pl-4 max-phone:text-[15px]"
+              className="flex animate-wave-hit items-center gap-[15px] rounded-full border border-foreground py-3.5 pr-4 pl-5 text-[17px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink motion-reduce:animate-none max-phone:py-3 max-phone:pr-3.5 max-phone:pl-4 max-phone:text-[15px]"
             >
               {link.label} <ArrowIcon className="w-4" />
             </Link>

@@ -29,10 +29,9 @@ const motionClass: Record<SloganMotion, string> = {
 // Top to bottom: the first word, then the cube, then the second word.
 const delay = (order: number) => ({ animationDelay: `${order * 120}ms` });
 
-// Set like the footer's "good": serif italic in the highlight colour. On the light page the highlight barely
-// shows, so there the words use the text colour.
+// Set in the highlight colour. On the light page the highlight barely shows, so there the words use the text colour.
 const wordClass =
-  "block px-[0.08em] font-serif text-[clamp(56px,8vw,128px)] leading-[0.9] font-normal whitespace-nowrap italic text-foreground transition-colors duration-700 dark:text-highlight max-phone:text-[clamp(50px,15vw,70px)]";
+  "block px-[0.08em] text-[clamp(42px,6vw,96px)] leading-[0.9] font-medium whitespace-nowrap text-foreground italic transition-colors duration-700 dark:text-highlight max-phone:text-[clamp(38px,11vw,54px)]";
 // A thin eight-armed star sitting on the oval line.
 function Star({ className }: { className?: string }) {
   return (

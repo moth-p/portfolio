@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 
 import { LaptopMockup } from "@/components/laptop-mockup"
-import { PixelNumber } from "@/components/pixel-icons"
+import { PixelText } from "@/components/pixel-icons"
 import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
@@ -76,7 +76,7 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
                   aria-hidden="true"
                   className="absolute top-[clamp(14px,1.4vw,22px)] left-[clamp(16px,1.6vw,24px)] block h-[clamp(22px,2vw,30px)] max-phone:top-3 max-phone:left-3.5"
                 >
-                  <PixelNumber value={String(index + 1).padStart(2, "0")} />
+                  <PixelText value={String(index + 1).padStart(2, "0")} />
                 </span>
               </div>
               <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight">
