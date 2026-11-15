@@ -29,13 +29,12 @@ const notoSansTC = Noto_Sans_TC({
 
 export const metadata: Metadata = {
   title: {
-    default: "Avery Vale",
-    template: "%s — Avery Vale",
+    default: "Polly Hsu",
+    template: "%s — Polly Hsu",
   },
   description:
     "Showcases a frontend developer’s skills and projects with a polished portfolio, featuring right-to-left project browsing and detailed case studies.",
   robots: { index: false, follow: false },
-  icons: { icon: "/favicon.png" },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

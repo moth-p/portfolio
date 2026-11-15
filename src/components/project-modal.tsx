@@ -18,14 +18,17 @@ const pageButton =
 const linkButton =
   "flex items-center gap-2 rounded-full border border-foreground py-1.5 pr-2.5 pl-3.5 text-[13px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink"
 
-// A project's case study in a popup, opened from the project cards. Previous / next page through every project
-// (wrapping around the list) in the bar along the bottom. `projectId` is the open project, null when closed.
+// A project's case study in a popup, opened from the project cards. Previous / next page through `list` (every
+// project unless given, e.g. only the filtered ones), wrapping around it, in the bar along the bottom. `projectId` is
+// the open project, null when closed.
 export function ProjectModal({
   projectId,
   onProjectChange,
+  list = projects,
 }: {
   projectId: string | null
   onProjectChange: (id: string | null) => void
+  list?: Project[]
 }) {
   const project = projectId ? getProject(projectId) : undefined
 
@@ -52,7 +55,7 @@ export function ProjectModal({
             </Dialog.Close>
           </div>
           {project && <ProjectBody project={project} />}
-          {project && <Pagination {...getAdjacentProjects(project.id)} onSelect={onProjectChange} current={project} />}
+          {project && <Pagination {...getAdjacentProjects(project.id, list)} list={list} onSelect={onProjectChange} current={project} />}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -134,15 +137,17 @@ function Pagination({
   current,
   previous,
   next,
+  list,
   onSelect,
 }: {
   current: Project
   previous: Project
   next: Project
+  list: Project[]
   onSelect: (id: string) => void
 }) {
-  const position = String(projects.indexOf(current) + 1).padStart(2, "0")
-  const total = String(projects.length).padStart(2, "0")
+  const position = String(list.indexOf(current) + 1).padStart(2, "0")
+  const total = String(list.length).padStart(2, "0")
   return (
     <nav
       aria-label="More projects"

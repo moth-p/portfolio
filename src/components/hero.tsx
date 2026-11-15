@@ -22,6 +22,9 @@ const SWITCH_AT = 0.12
 // …which unfolds one project per PROJECT_STEP, then the slogan, whose cube solves itself in step with the scroll
 // between SOLVE_LEAD after it appears and SOLVE_LEAD before it leaves…
 const PROJECT_STEP = 0.5
+// Around each project's own scroll position, PROJECT_REST of a step keeps it fully open (a short pause in the
+// scroll) so its preview and info sit side by side, still and clear, before the next one starts sweeping over.
+const PROJECT_REST = 0.3
 const SLOGAN_AT = SWITCH_AT + projects.length * PROJECT_STEP
 const SOLVE_LEAD = 0.2
 const SLOGAN_STEP = 1.6
@@ -61,6 +64,11 @@ const linksClass: Record<LinksMotion, string> = {
 }
 
 const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
+// Turns the raw scroll position in projects into the slides' progress, flat for PROJECT_REST around each project.
+const restAtProjects = (raw: number) => {
+  const index = Math.floor(raw)
+  return index + clamp((raw - index - PROJECT_REST / 2) / (1 - PROJECT_REST), 1)
+}
 
 // Scroll position (in viewport heights) that opens a given project or work flow step.
 const projectScroll = (index: number) => SWITCH_AT + (index + 0.5) * PROJECT_STEP
@@ -189,7 +197,7 @@ export function Hero() {
     if (started.current && landing !== null) hold(landing, LANDING_HOLD_MS, LANDING_HOLD_MAX_MS)
     lastScrolled.current = scrolled
     started.current = true
-    setProjectProgress(clamp((scrolled - projectScroll(0)) / PROJECT_STEP, projects.length - 1))
+    setProjectProgress(restAtProjects(clamp((scrolled - projectScroll(0)) / PROJECT_STEP, projects.length - 1)))
     setSolveProgress(clamp((scrolled - SLOGAN_AT - SOLVE_LEAD) / (SLOGAN_STEP - 2 * SOLVE_LEAD), 1))
     setFlowProgress(clamp((scrolled - flowScroll(0)) / FLOW_STEP, workflowSteps.length - 1))
 
@@ -232,6 +240,13 @@ export function Hero() {
 
   const selectProject = useCallback((index: number) => {
     window.scrollTo({ top: projectScroll(index) * window.innerHeight, behavior: "smooth" })
+  }, [])
+
+  // Jumps straight back to the hero, skipping the stops and holds a scroll across the track would hit.
+  const goTop = useCallback(() => {
+    holdUntil.current = 0
+    lastScrolled.current = 0
+    window.scrollTo({ top: 0, behavior: "instant" })
   }, [])
 
   const selectFlowStep = useCallback((index: number) => {
@@ -460,6 +475,22 @@ export function Hero() {
           </div>
         </div>
       </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        onClick={goTop}
+        aria-label="Back to top"
+        title="Back to top"
+        tabIndex={phase === "hero" ? -1 : undefined}
+        aria-hidden={phase === "hero" || undefined}
+        className={cn(
+          "fixed right-gutter bottom-[clamp(20px,4vw,40px)] z-40 size-[42px] rounded-full border-border bg-background text-foreground shadow-none transition-[opacity,translate,background-color,color] duration-[220ms] hover:-translate-y-0.5 hover:bg-highlight hover:text-ink max-phone:size-[38px] dark:border-border dark:bg-background dark:hover:bg-highlight",
+          phase === "hero" && "pointer-events-none translate-y-2 opacity-0",
+        )}
+      >
+        <ArrowIcon direction="up" className="size-[18px]" />
+      </Button>
     </div>
   )
 }

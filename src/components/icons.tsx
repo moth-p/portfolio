@@ -22,11 +22,11 @@ export function ArrowIcon({
   direction = "right",
   className,
 }: {
-  direction?: "left" | "right"
+  direction?: "left" | "right" | "up"
   className?: string
 }) {
   return (
-    <Icon className={cn(direction === "left" && "rotate-180", className)}>
+    <Icon className={cn(direction === "left" && "rotate-180", direction === "up" && "-rotate-90", className)}>
       <path d="M3 10h13M11.5 5.5 16 10l-4.5 4.5" />
     </Icon>
   )

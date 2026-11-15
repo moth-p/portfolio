@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, type ReactNode } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { LaptopMockup } from "@/components/laptop-mockup"
 import { PixelText } from "@/components/pixel-icons"
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 const filters = ["All", "Next.js", "React"] as const
 type Filter = (typeof filters)[number]
 
-export function ProjectGrid({ projects, title }: { projects: Project[]; title: ReactNode }) {
+export function ProjectGrid({ projects }: { projects: Project[] }) {
   const list = useRef<HTMLUListElement>(null)
   // Delay (ms) of each card currently in view; cards not in it are hidden, ready to play again.
   const [shown, setShown] = useState<Record<string, number>>({})
@@ -62,7 +62,6 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
 
   return (
     <>
-      {title}
       <fieldset className="mt-[clamp(24px,4vh,44px)] flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px]">
         <legend className="sr-only">Filter by framework</legend>
         {filters.map((option) => (
@@ -121,7 +120,8 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
           </li>
         ))}
       </ul>
-      <ProjectModal projectId={openId} onProjectChange={setOpenId} />
+      {/* The popup pages through only the projects the filter shows */}
+      <ProjectModal projectId={openId} onProjectChange={setOpenId} list={visible} />
     </>
   )
 }

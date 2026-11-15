@@ -13,7 +13,7 @@ const HOP_MS = 700
 // Every visit to the home page wakes the pet at this level.
 const HOME_LOAD_LEVEL = 80
 // Recharging tops the energy up to this level; it never lowers a fuller charge.
-const RECHARGE_LEVEL = 80
+const RECHARGE_LEVEL = 100
 
 type Charge = { level: number; at: number }
 export type PetMood = "awake" | "tired" | "asleep"

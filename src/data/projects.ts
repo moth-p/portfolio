@@ -38,10 +38,10 @@ export const projects: Project[] = [
       "A device monitoring interface that pairs an interactive 3D building model with live metric charts. Device popovers stay anchored as the camera orbits, so an operator sees both where equipment sits and how it performs on one screen.",
     descriptionTw:
       "結合可互動的 3D 建築模型與即時設備數據圖表的設備監控介面。設備資訊卡會隨鏡頭旋轉固定在設備位置上，讓操作人員在同一個畫面中同時掌握設備位置與運作狀況。",
-    image: "/projects/sma-monitor/cover.png",
-    video: "/projects/sma-monitor/preview.mp4",
+    image: "/projects/sma-monitor/cover-v2.png",
+    video: "/projects/sma-monitor/preview-v2.mp4",
     color: "#cccccc",
-    techStack: ["React", "Autodesk Forge", "Chart.js", "shadcn/ui"],
+    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "Autodesk Forge", "Chart.js", "ESLint"],
     duties: [
       "Worked with the PM and backend engineers to define requirements and API contracts",
       "Designed the UI/UX, from user flows and wireframes to the final interface",
@@ -98,7 +98,7 @@ export const projects: Project[] = [
     image: "/projects/mixxtopia/cover.png",
     video: "/projects/mixxtopia/preview.mp4",
     color: "#eee8d0",
-    techStack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Animate.css", "GSAP", "three.js", "p5.js", "Iconify"],
+    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "three.js", "GSAP", "p5.js", "Animate.css", "Iconify"],
     duties: [
       "A personal side project: designed the UI/UX and built the whole frontend on my own",
       "Built motion around NMIXX's MMU concept with GSAP and three.js",
@@ -122,8 +122,8 @@ export const projects: Project[] = [
       "A 3D map interface for a food manufacturer to monitor equipment across its regional factories in real time. Floor plans rise out of a vector map with each machine as a marker, and popover cards show live temperature, humidity, status and anomaly alerts.",
     descriptionTw:
       "3D 地圖介面，即時監控各地工廠的設備，每台機器以標記呈現，資訊卡顯示即時溫度、濕度、狀態與異常警示。",
-    image: "/projects/iot-monitor/cover.png",
-    video: "/projects/iot-monitor/preview.mp4",
+    image: "/projects/iot-monitor/cover-v2.png",
+    video: "/projects/iot-monitor/preview-v2.mp4",
     color: "#d2d2d6",
     techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "three.js", "ESLint"],
     duties: [
@@ -174,10 +174,11 @@ export function getProject(id: string) {
 }
 
 // The projects either side of `id`, wrapping around the list
-export function getAdjacentProjects(id: string) {
-  const index = projects.findIndex((project) => project.id === id)
+// The projects either side of `id` in `list` (every project by default), wrapping around its ends.
+export function getAdjacentProjects(id: string, list: Project[] = projects) {
+  const index = list.findIndex((project) => project.id === id)
   return {
-    previous: projects[(index - 1 + projects.length) % projects.length],
-    next: projects[(index + 1) % projects.length],
+    previous: list[(index - 1 + list.length) % list.length],
+    next: list[(index + 1) % list.length],
   }
 }
