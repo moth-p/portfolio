@@ -49,9 +49,8 @@ export const projects: Project[] = [
       "Integrated the Autodesk Forge 3D viewer with live Chart.js metric charts",
     ],
     dutiesTw: [
-      "與 PM 及後端工程師協作，釐清需求並制定 API 規格",
-      "負責 UI/UX 設計，從使用者流程、線框稿到最終介面",
-      "主導前端開發，包含版面架構、技術選型與 API 串接",
+      "與 PM 協作，釐清需求並製作 Prototype 與 MVP",
+      "主責 UI/UX 設計，從使用者流程到最終介面",
       "整合 Autodesk Forge 3D 檢視器與 Chart.js 即時數據圖表",
     ],
   },
@@ -66,9 +65,9 @@ export const projects: Project[] = [
     description:
       "A visualization interface for a group of long-term care institutions. A GIS map shows management the occupancy, residents, diets, events and car dispatch of every site, and one dropdown drills into a single institution.",
     descriptionTw:
-      "長照機構集團的視覺化介面。管理者透過 GIS 地圖掌握各機構的入住率、住民、膳食、活動與派車狀況，並可從下拉選單深入查看單一機構。",
-    image: "/projects/long-term-care/cover.png",
-    video: "/projects/long-term-care/preview.mp4",
+      "長照機構集團的視覺化介面。管理者透過 GIS 地圖掌握各機構的入住率、住民、膳食、活動與派車狀況。",
+    image: "/projects/long-term-care/cover-map.png",
+    video: "/projects/long-term-care/preview-map.mp4",
     color: "#d9d8d5",
     techStack: ["React", "TypeScript", "Vite", "Redux Toolkit", "React Router", "Tailwind CSS", "shadcn/ui", "Leaflet", "Recharts", "ESLint"],
     duties: [
@@ -79,9 +78,9 @@ export const projects: Project[] = [
     ],
     dutiesTw: [
       "與 PM 及後端工程師協作，釐清需求並制定 API 規格",
-      "負責 UI/UX 設計，從使用者流程、線框稿到最終介面",
-      "主導前端開發，包含版面架構、技術選型與 API 串接",
-      "以 Leaflet 建置 GIS 地圖，並以 Recharts 呈現各機構營運數據",
+      "主責 UI/UX 設計，從使用者流程到最終介面",
+      "主責前端開發，包含版面架構、技術棧與 API 串接",
+      "以 Leaflet 與 OpenFreeMap 建置 GIS 地圖",
     ],
   },
   {
@@ -107,7 +106,7 @@ export const projects: Project[] = [
     ],
     dutiesTw: [
       "個人 Side Project，獨立完成 UI/UX 設計與前端開發",
-      "以 GSAP 與 three.js 圍繞 NMIXX 的 MMU 概念打造動態效果",
+      "以 GSAP 與 Three.js 打造動態效果",
       "以 P5.js 製作簡易互動遊戲",
     ],
   },
@@ -117,27 +116,26 @@ export const projects: Project[] = [
     title: "IoT Monitor",
     category: "Factory monitoring",
     year: "2026",
-    summary: "A 2.5D/3D map interface for monitoring factory equipment across regions in real time.",
-    summaryTw: "以 2.5D/3D 地圖來即時監控各地工廠設備的介面。",
+    summary: "A 3D map interface for monitoring factory equipment across regions in real time.",
+    summaryTw: "以 3D 地圖來即時監控各地工廠設備的介面。",
     description:
-      "A 2.5D/3D map interface for a food manufacturer to monitor equipment across its regional factories in real time. Floor plans rise out of a vector map with each machine as a marker, and popover cards show live temperature, humidity, status and anomaly alerts.",
+      "A 3D map interface for a food manufacturer to monitor equipment across its regional factories in real time. Floor plans rise out of a vector map with each machine as a marker, and popover cards show live temperature, humidity, status and anomaly alerts.",
     descriptionTw:
-      "為食品製造商打造的 2.5D/3D 地圖介面，即時監控各地工廠的設備。廠區平面圖從向量地圖中立體浮現，每台機器以標記呈現，資訊卡顯示即時溫度、濕度、狀態與異常警示。",
+      "3D 地圖介面，即時監控各地工廠的設備，每台機器以標記呈現，資訊卡顯示即時溫度、濕度、狀態與異常警示。",
     image: "/projects/iot-monitor/cover.png",
     video: "/projects/iot-monitor/preview.mp4",
     color: "#d2d2d6",
-    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "deck.gl", "three.js", "ESLint"],
+    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "three.js", "ESLint"],
     duties: [
       "Worked with the PM and backend engineers to define requirements and API contracts",
       "Designed the UI/UX, from user flows and wireframes to the final interface",
       "Led the whole frontend: layout, tech stack choices and API integration",
-      "Built the 2.5D/3D map with MapLibre GL, deck.gl and three.js, showing live readings and anomaly alerts",
+      "Built the 3D map with MapLibre GL, deck.gl and three.js, showing live readings and anomaly alerts",
     ],
     dutiesTw: [
-      "與 PM 及後端工程師協作，釐清需求並制定 API 規格",
-      "負責 UI/UX 設計，從使用者流程、線框稿到最終介面",
-      "主導前端開發，包含版面架構、技術選型與 API 串接",
-      "以 MapLibre GL、deck.gl 與 three.js 建置 2.5D/3D 地圖，呈現即時讀數與異常警示",
+      "與 PM 協作，釐清需求並製作 Prototype 與 MVP",
+      "主責 UI/UX 設計，從使用者流程到最終介面",
+      "以 MapLibre GL 與 Three.js 建置 3D 地圖，視覺化異常警示",
     ],
   },
   {
@@ -146,14 +144,14 @@ export const projects: Project[] = [
     title: "GameHub",
     category: "Web app",
     year: "2026",
-    summary: "A pixel-art catalogue for searching and collecting from 900k games.",
-    summaryTw: "像素風格的遊戲目錄，可搜尋、篩選並收藏近百萬款遊戲。",
+    summary: "A catalogue for searching and collecting from 900k games.",
+    summaryTw: "遊戲列表，可搜尋、篩選並收藏近百萬款遊戲。",
     description:
-      "A retro, pixel-art catalogue for browsing the RAWG games database. Search, filter, sort and rank close to a million titles, open any game in detail, and keep a personal collection, with the API key kept safely on the server.",
+      "A catalogue for browsing the RAWG games database. Search, filter, sort and rank close to a million titles, open any game in detail, and keep a personal collection, with the API key kept safely on the server.",
     descriptionTw:
-      "瀏覽 RAWG 遊戲資料庫的復古像素風遊戲目錄。可搜尋、篩選、排序並排名近百萬款遊戲，查看每款遊戲的詳細資訊並建立個人收藏。",
-    image: "/projects/gamehub/cover.png",
-    video: "/projects/gamehub/preview.mp4",
+      "串接 RAWG 資料庫的遊戲列表，可搜尋、篩選、排序並排名近百萬款遊戲，查看每款遊戲的詳細資訊並建立個人收藏。",
+    image: "/projects/gamehub/cover-grid.png",
+    video: "/projects/gamehub/preview-collect.mp4",
     color: "#787878",
     techStack: ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "ESLint"],
     duties: [
@@ -163,7 +161,6 @@ export const projects: Project[] = [
     ],
     dutiesTw: [
       "個人 Side Project，獨立完成 UI/UX 設計與前端開發",
-      "以 Tailwind CSS 與 shadcn/ui 打造像素風介面",
       "串接 RAWG API 實作搜尋、篩選、排序與排名",
     ],
   },

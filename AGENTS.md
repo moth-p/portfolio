@@ -14,7 +14,7 @@ Next.js (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui portfolio site.
 - `src/app/layout.tsx` - Root layout: fonts (`next/font`), metadata, `ThemeProvider`
 - `src/app/page.tsx` - Home page (`/`)
 - `src/app/projects/page.tsx` - All projects grid (`/projects`)
-- `src/app/project/[id]/page.tsx` - Case study pages, statically generated from `src/data/projects.ts`; unknown ids 404
+- `src/components/project-modal.tsx` - Case study popup opened from project cards (home + `/projects`), with previous/next pagination along the bottom
 - `src/app/globals.css` - Tailwind v4 import, theme tokens, custom utilities
 - `src/components/` - Page sections and shared pieces; `src/components/ui/` holds shadcn/ui components
 - `src/data/projects.ts` - Project content and lookup helpers

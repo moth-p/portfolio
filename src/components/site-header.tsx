@@ -35,13 +35,6 @@ export function SiteHeader({
         ))}
       </nav>
       <div className="flex items-center gap-[22px] justify-self-end max-tab:ml-5 max-phone:ml-3">
-        <a
-          className="flex items-center gap-[9px] justify-self-end text-xs max-tab:hidden"
-          href="mailto:hello@averyvale.design"
-        >
-          <span className="size-2 rounded-full bg-highlight shadow-[0_0_0_4px_color-mix(in_srgb,var(--highlight)_35%,transparent)]" />
-          Available for work
-        </a>
         <ThemeToggle />
       </div>
     </header>

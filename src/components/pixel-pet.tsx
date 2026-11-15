@@ -10,7 +10,7 @@ const DRAIN_MS = 3000
 const TIRED_AT = 25
 const STORAGE_KEY = "portfolio-pet"
 const HOP_MS = 700
-// Loading or reloading the home page wakes the pet at this level.
+// Every visit to the home page wakes the pet at this level.
 const HOME_LOAD_LEVEL = 80
 // Recharging tops the energy up to this level; it never lowers a fuller charge.
 const RECHARGE_LEVEL = 80
@@ -23,8 +23,6 @@ export type PetMood = "awake" | "tired" | "asleep"
 const listeners = new Set<() => void>()
 // Fallback when localStorage is unavailable (e.g. blocked site data).
 let memoryCharge: string | null = null
-// Module state survives client-side navigation, so this marks the first pet shown since the page loaded.
-let loadHandled = false
 
 function readStorage() {
   try {
@@ -205,16 +203,14 @@ export function PetSprite({
 
 export type PetEnergy = ReturnType<typeof usePetEnergy>
 
-// `onHomePage`: the first pet shown after a load or reload of the home page resets the energy to HOME_LOAD_LEVEL.
+// `onHomePage`: every visit to the home page, including client-side navigation back to it, resets the energy to HOME_LOAD_LEVEL.
 export function usePetEnergy({ onHomePage = false }: { onHomePage?: boolean } = {}) {
   const charge = parseCharge(useSyncExternalStore(subscribe, () => readStorage() ?? memoryCharge, () => null))
   const [now, setNow] = useState(() => Date.now())
   const [hopping, setHopping] = useState(false)
 
   useEffect(() => {
-    const firstSinceLoad = !loadHandled
-    loadHandled = true
-    if (onHomePage && firstSinceLoad) writeCharge({ level: HOME_LOAD_LEVEL, at: Date.now() })
+    if (onHomePage) writeCharge({ level: HOME_LOAD_LEVEL, at: Date.now() })
     // First visit: start the clock now.
     else if (!parseCharge(readStorage() ?? memoryCharge)) writeCharge({ level: 100, at: Date.now() })
   }, [onHomePage])
@@ -331,7 +327,6 @@ export function TitlePet({ height, className }: { height: number; className?: st
 }
 
 // The pet's body alone, without its sword, legs or motion: the mark at the start of the site header.
-// Stateless on purpose: calling usePetEnergy here would claim the home page's wake-up on load.
 const iconPixels = bodyPixels.filter(({ y }) => y < SPRITE.length - 1)
 
 export function PetIcon({ className }: { className?: string }) {

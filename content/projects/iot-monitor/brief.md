@@ -3,7 +3,7 @@
 **Source:** `~/Desktop/00_coding/frontend/iot-monitor` (monorepo: `client/` + `server/`)
 
 ## Brief
-A 2.5D/3D dashboard for a food-manufacturing company to monitor equipment across its regional factories in near real time — temperature, humidity, boiler state, operational status and anomaly alerts.
+A 3D dashboard for a food-manufacturing company to monitor equipment across its regional factories in near real time — temperature, humidity, boiler state, operational status and anomaly alerts.
 
 - **Global map view:** all factories with high-level status indicators.
 - **Factory 3D view:** glTF floor plans (extruded walls) layered over vector maps, with equipment as interactive markers.

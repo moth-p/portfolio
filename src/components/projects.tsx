@@ -2,10 +2,11 @@
 
 import { Accordion } from "radix-ui"
 import Link from "next/link"
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 import { ArrowIcon } from "@/components/icons"
 import { LaptopMockup } from "@/components/laptop-mockup"
+import { ProjectModal } from "@/components/project-modal"
 import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
@@ -36,6 +37,7 @@ export function Projects({
   onSelect: (index: number) => void
 }) {
   const root = useRef<HTMLDivElement>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
   // The slide that is mostly open counts as the open one (for its state, focus and the trigger colours).
   const activeIndex = Math.round(progress)
 
@@ -88,7 +90,7 @@ export function Projects({
           </Link>
         </div>
         <p lang="zh-Hant" className="mt-[clamp(14px,1.6vw,22px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground">
-          開發涵蓋 IOT 企業後台系統與品牌形象網站。
+          開發 IOT 設備監控介面與品牌形象網站。
         </p>
       </div>
 
@@ -112,7 +114,6 @@ export function Projects({
         )}
       >
         {projects.map((project, index) => {
-          const href = `/project/${project.id}`
           const open = index === activeIndex
           // How far this slide is unfolded, tied directly to the scroll: between two slides, the next one has
           // covered the former by the fraction scrolled, and stops wherever the scroll stops.
@@ -136,10 +137,11 @@ export function Projects({
               {/* Kept mounted so a folding slide stays in place while it's covered; the inner box holds the open size */}
               <Accordion.Content forceMount inert={!open} className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
                 <div className="absolute inset-y-0 left-0 flex w-(--open-size) gap-[clamp(20px,2.6vw,44px)] py-[clamp(16px,2.6vh,28px)] pr-[clamp(16px,2.6vw,44px)] max-tab:inset-x-0 max-tab:top-0 max-tab:bottom-auto max-tab:h-(--open-size) max-tab:w-auto max-tab:flex-col max-tab:gap-4 max-tab:pt-0 max-tab:pr-0">
-                  <Link
-                    href={href}
+                  <button
+                    type="button"
+                    onClick={() => setOpenId(project.id)}
                     aria-label={`View ${project.title} case study`}
-                    className="group/image relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[18px]"
+                    className="group/image relative min-h-0 cursor-pointer min-w-0 flex-1 overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[18px]"
                   >
                     <LaptopMockup
                       src={project.image}
@@ -148,15 +150,16 @@ export function Projects({
                       sizes="(max-width: 800px) 100vw, 60vw"
                       laptopClassName="transition-[scale] duration-700 ease-soft group-hover/image:scale-[1.035]"
                     />
-                  </Link>
+                  </button>
                   <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">
                     <p className="text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:text-[15px]">{project.summary}</p>
                     <p lang="zh-Hant" className="mt-2 text-[clamp(13px,1.1vw,17px)] leading-normal tracking-[0.15em] text-muted-foreground">
                       {project.summaryTw}
                     </p>
-                    <Link
-                      href={href}
-                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3"
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(project.id)}
+                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit cursor-pointer items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3"
                     >
                       <span>
                         View
@@ -165,7 +168,7 @@ export function Projects({
                         </span>
                       </span>
                       <ArrowIcon className="w-4" />
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </Accordion.Content>
@@ -173,6 +176,7 @@ export function Projects({
           )
         })}
       </Accordion.Root>
+      <ProjectModal projectId={openId} onProjectChange={setOpenId} />
     </div>
   )
 }

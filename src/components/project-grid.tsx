@@ -1,20 +1,35 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 
 import { LaptopMockup } from "@/components/laptop-mockup"
 import { PixelText } from "@/components/pixel-icons"
+import { ProjectModal } from "@/components/project-modal"
 import type { Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
 // The Projects page grid. Cards fade up like the page title (FadeInUp): Animate.css timing, each row 120ms after the
 // one above, played when a card scrolls into view and replayed the next time. They rise by about the title's line
 // height rather than their own height.
+// The framework filter is a single choice: "All" shows every project, a framework keeps the projects built with it.
+const filters = ["All", "Next.js", "React"] as const
+type Filter = (typeof filters)[number]
+
 export function ProjectGrid({ projects, title }: { projects: Project[]; title: ReactNode }) {
   const list = useRef<HTMLUListElement>(null)
   // Delay (ms) of each card currently in view; cards not in it are hidden, ready to play again.
   const [shown, setShown] = useState<Record<string, number>>({})
+  const [filter, setFilter] = useState<Filter>("All")
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  const visible = filter === "All" ? projects : projects.filter((project) => project.techStack.includes(filter))
+  const visibleKey = visible.map((project) => project.id).join(" ")
+
+  // Cards are re-observed after a filter change, so all of them fade up again in their new places.
+  const select = (next: Filter) => {
+    setFilter(next)
+    setShown({})
+  }
 
   useEffect(() => {
     const items = Array.from(list.current?.children ?? []) as HTMLElement[]
@@ -43,16 +58,32 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
     )
     items.forEach((item) => observer.observe(item))
     return () => observer.disconnect()
-  }, [])
+  }, [visibleKey])
 
   return (
     <>
       {title}
+      <fieldset className="mt-[clamp(24px,4vh,44px)] flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px]">
+        <legend className="sr-only">Filter by framework</legend>
+        {filters.map((option) => (
+          <label key={option} className="flex cursor-pointer items-center gap-2.5 select-none">
+            <input
+              type="radio"
+              name="framework"
+              value={option}
+              checked={filter === option}
+              onChange={() => select(option)}
+              className="size-4 cursor-pointer accent-foreground"
+            />
+            {option}
+          </label>
+        ))}
+      </fieldset>
       <ul
         ref={list}
-        className="mt-[clamp(36px,7vh,80px)] grid grid-cols-4 gap-x-[18px] gap-y-[clamp(40px,5vw,64px)] max-tab:grid-cols-2 max-phone:grid-cols-1"
+        className="mt-[clamp(28px,5vh,56px)] grid grid-cols-4 gap-x-[18px] gap-y-[clamp(40px,5vw,64px)] max-tab:grid-cols-2 max-phone:grid-cols-1"
       >
-        {projects.map((project, index) => (
+        {visible.map((project) => (
           <li
             key={project.id}
             data-id={project.id}
@@ -63,7 +94,7 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
                 : "opacity-0 motion-reduce:opacity-100",
             )}
           >
-            <Link href={`/project/${project.id}`} className="group block">
+            <button type="button" onClick={() => setOpenId(project.id)} className="group block w-full cursor-pointer text-left">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[18px]">
                 <LaptopMockup
                   src={project.image}
@@ -76,7 +107,8 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
                   aria-hidden="true"
                   className="absolute top-[clamp(14px,1.4vw,22px)] left-[clamp(16px,1.6vw,24px)] block h-[clamp(22px,2vw,30px)] max-phone:top-3 max-phone:left-3.5"
                 >
-                  <PixelText value={String(index + 1).padStart(2, "0")} />
+                  {/* Numbered by place in the full list, so a project keeps its number when filtered */}
+                  <PixelText value={String(projects.indexOf(project) + 1).padStart(2, "0")} />
                 </span>
               </div>
               <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight">
@@ -85,10 +117,11 @@ export function ProjectGrid({ projects, title }: { projects: Project[]; title: R
               <p lang="zh-Hant" className="mt-2 text-sm leading-normal tracking-[0.08em] text-muted-foreground">
                 {project.summaryTw}
               </p>
-            </Link>
+            </button>
           </li>
         ))}
       </ul>
+      <ProjectModal projectId={openId} onProjectChange={setOpenId} />
     </>
   )
 }
