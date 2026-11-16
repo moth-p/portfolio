@@ -171,7 +171,8 @@ export function Workflow({
       <div
         className={cn(
           "col-span-6 -ml-gutter flex flex-col items-center px-[clamp(20px,3vw,48px)] max-tab:col-span-12 max-tab:ml-0 max-tab:px-0",
-          leaving && "animate__animated animate__fadeOutLeft",
+          // On phone, where only the chart shows, it fades out upwards instead.
+          leaving && "animate__animated animate__fadeOutLeft max-phone:[animation-name:fadeOutUp]!",
         )}
       >
         <div style={titleDelay} className={enter}>

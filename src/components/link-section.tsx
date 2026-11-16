@@ -7,7 +7,7 @@ import { PET_HEIGHT, PET_WIDTH, PetSprite } from "@/components/pixel-pet"
 import { cn } from "@/lib/utils"
 
 const links = [
-  { label: "More Projects", labelTw: "更多專案", href: "/projects" },
+  { label: "More", labelTw: "更多專案", href: "/projects" },
 ]
 
 // The last panel of the hero stage, shown the moment the work flow leaves (see Hero). `play` runs the

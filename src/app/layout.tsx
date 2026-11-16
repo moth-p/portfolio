@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <body>
-        <ThemeProvider attribute="data-theme" storageKey="portfolio-theme" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="data-theme" storageKey="portfolio-theme" defaultTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>

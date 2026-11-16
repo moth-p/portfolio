@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
 
 import { LaptopMockup } from "@/components/laptop-mockup"
 import { PixelText } from "@/components/pixel-icons"
@@ -20,7 +20,8 @@ const filters: { value: Filter; label: string; labelTw?: string }[] = [
 ]
 type Filter = "all" | Audience
 
-export function ProjectGrid({ projects }: { projects: Project[] }) {
+// `title` is the page heading; on phone it stays pinned under the site header together with the filter.
+export function ProjectGrid({ projects, title }: { projects: Project[]; title: ReactNode }) {
   const list = useRef<HTMLUListElement>(null)
   // Delay (ms) of each card currently in view; cards not in it are hidden, ready to play again.
   const [shown, setShown] = useState<Record<string, number>>({})
@@ -67,30 +68,34 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <fieldset className="mt-[clamp(24px,4vh,44px)] flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px]">
-        <legend className="sr-only">Filter by audience</legend>
-        {filters.map((option) => (
-          <label key={option.value} className="flex cursor-pointer items-center gap-2.5 select-none">
-            <input
-              type="radio"
-              name="audience"
-              value={option.value}
-              checked={filter === option.value}
-              onChange={() => select(option.value)}
-              className="size-4 cursor-pointer accent-foreground"
-            />
-            {option.label}
-            {option.labelTw && (
-              <span lang="zh-Hant" className="tracking-[0.08em] text-muted-foreground">
-                {option.labelTw}
-              </span>
-            )}
-          </label>
-        ))}
-      </fieldset>
+      {/* On phone the title and filter stay pinned under the site header while the cards scroll */}
+      <div className="max-phone:sticky max-phone:top-header max-phone:z-10 max-phone:-mx-gutter max-phone:border-b max-phone:border-border max-phone:bg-background max-phone:px-gutter max-phone:pt-3 max-phone:pb-4 max-phone:grid-lines">
+        {title}
+        <fieldset className="mt-[clamp(24px,4vh,44px)] flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] max-phone:mt-4 max-phone:gap-x-4">
+          <legend className="sr-only">Filter by audience</legend>
+          {filters.map((option) => (
+            <label key={option.value} className="flex cursor-pointer items-center gap-2.5 select-none">
+              <input
+                type="radio"
+                name="audience"
+                value={option.value}
+                checked={filter === option.value}
+                onChange={() => select(option.value)}
+                className="size-4 cursor-pointer accent-foreground"
+              />
+              {option.label}
+              {option.labelTw && (
+                <span lang="zh-Hant" className="tracking-[0.08em] text-muted-foreground">
+                  {option.labelTw}
+                </span>
+              )}
+            </label>
+          ))}
+        </fieldset>
+      </div>
       <ul
         ref={list}
-        className="mt-[clamp(28px,5vh,56px)] grid grid-cols-4 gap-x-[18px] gap-y-[clamp(40px,5vw,64px)] max-tab:grid-cols-2 max-phone:grid-cols-1"
+        className="mt-[clamp(28px,5vh,56px)] grid grid-cols-4 gap-x-[18px] gap-y-[clamp(40px,5vw,64px)] max-tab:grid-cols-2 max-phone:mt-6 max-phone:gap-x-3 max-phone:gap-y-8"
       >
         {visible.map((project) => (
           <li
@@ -104,26 +109,26 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
             )}
           >
             <button type="button" onClick={() => setOpenId(project.id)} className="group block w-full cursor-pointer text-left">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[18px]">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[26px] mockup-panel max-phone:rounded-[14px]">
                 <LaptopMockup
                   src={project.image}
                   alt={`${project.title} project`}
-                  sizes="(max-width: 520px) 100vw, (max-width: 800px) 50vw, 25vw"
+                  sizes="(max-width: 800px) 50vw, 25vw"
                   laptopClassName="transition-[scale] duration-700 ease-soft group-hover:scale-[1.035]"
                 />
                 {/* The project's number in pixels, in the top left corner */}
                 <span
                   aria-hidden="true"
-                  className="absolute top-[clamp(14px,1.4vw,22px)] left-[clamp(16px,1.6vw,24px)] block h-[clamp(22px,2vw,30px)] max-phone:top-3 max-phone:left-3.5"
+                  className="absolute top-[clamp(14px,1.4vw,22px)] left-[clamp(16px,1.6vw,24px)] block h-[clamp(22px,2vw,30px)] max-phone:top-2.5 max-phone:left-3 max-phone:h-4"
                 >
                   {/* Numbered by place in the full list, so a project keeps its number when filtered */}
-                  <PixelText value={String(projects.indexOf(project) + 1).padStart(2, "0")} />
+                  <PixelText value={String(projects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0")} />
                 </span>
               </div>
-              <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight">
+              <span className="mt-4 block text-[clamp(18px,1.75vw,26px)] leading-tight max-phone:mt-3 max-phone:text-base">
                 <span className="link-underline">{project.title}</span>
               </span>
-              <p lang="zh-Hant" className="mt-2 text-sm leading-normal tracking-[0.08em] text-muted-foreground">
+              <p lang="zh-Hant" className="mt-2 text-sm leading-normal tracking-[0.08em] text-muted-foreground max-phone:mt-1.5 max-phone:text-xs">
                 {project.summaryTw}
               </p>
             </button>

@@ -24,6 +24,8 @@ const motionClass: Record<ProjectsMotion, string> = {
 // Entering from the hero, the slides then rise in one by one (left to right on desktop, top to bottom on phone).
 const contentDelay = { animationDelay: "120ms" }
 const slideDelay = (index: number) => ({ animationDelay: `${250 + index * 120}ms` })
+// Open height (px) of a stacked slide below which its preview and text sit side by side (see data-compact).
+const COMPACT_BELOW = 360
 
 export function Projects({
   projects,
@@ -58,6 +60,8 @@ export function Projects({
           : item.offsetWidth - item.clientWidth + header.offsetWidth
       }
       element.style.setProperty("--open-size", `${Math.max(0, open)}px`)
+      // On phone, stacked slides too short to fit the preview over the text put the two side by side instead.
+      element.toggleAttribute("data-compact", vertical && open < COMPACT_BELOW && matchMedia("(width < 521px)").matches)
     }
     measure()
     const observer = new ResizeObserver(measure)
@@ -109,7 +113,7 @@ export function Projects({
         }}
         style={motion === "in-up" ? undefined : contentDelay}
         className={cn(
-          "flex min-h-0 flex-1 border-x border-border max-tab:flex-col max-tab:border-x-0 max-tab:border-y",
+          "group/slides flex min-h-0 flex-1 border-x border-border max-tab:flex-col max-tab:border-x-0 max-tab:border-y",
           motion !== "in-up" && motionClass[motion],
         )}
       >
@@ -136,7 +140,7 @@ export function Projects({
               </Accordion.Header>
               {/* Kept mounted so a folding slide stays in place while it's covered; the inner box holds the open size */}
               <Accordion.Content forceMount inert={!open} className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-                <div className="absolute inset-y-0 left-0 flex w-(--open-size) gap-[clamp(20px,2.6vw,44px)] py-[clamp(16px,2.6vh,28px)] pr-[clamp(16px,2.6vw,44px)] max-tab:inset-x-0 max-tab:top-0 max-tab:bottom-auto max-tab:h-(--open-size) max-tab:w-auto max-tab:flex-col max-tab:gap-4 max-tab:pt-0 max-tab:pr-0">
+                <div className="absolute inset-y-0 left-0 flex w-(--open-size) gap-[clamp(20px,2.6vw,44px)] py-[clamp(16px,2.6vh,28px)] pr-[clamp(16px,2.6vw,44px)] max-tab:inset-x-0 max-tab:top-0 max-tab:bottom-auto max-tab:h-(--open-size) max-tab:w-auto max-tab:flex-col max-tab:gap-4 max-tab:pt-0 max-tab:pr-0 group-data-compact/slides:grid group-data-compact/slides:grid-cols-[minmax(0,1fr)_52%] group-data-compact/slides:content-start group-data-compact/slides:gap-x-4 group-data-compact/slides:gap-y-3 group-data-compact/slides:pb-3">
                   <button
                     type="button"
                     onClick={() => setOpenId(project.id)}
@@ -151,15 +155,19 @@ export function Projects({
                       laptopClassName="transition-[scale] duration-700 ease-soft group-hover/image:scale-[1.035]"
                     />
                   </button>
-                  <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full">
-                    <p className="text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:text-[15px]">{project.summary}</p>
-                    <p lang="zh-Hant" className="mt-2 text-[clamp(13px,1.1vw,17px)] leading-normal tracking-[0.15em] text-muted-foreground">
-                      {project.summaryTw}
-                    </p>
+                  {/* Compact slides lay this column's parts on the grid above: the text beside the preview (which takes the text's height), the button (not on phone, where the preview opens the case study)
+                      on its own row below both */}
+                  <div className="flex w-[clamp(220px,20vw,300px)] flex-none flex-col justify-end max-tab:w-full group-data-compact/slides:contents">
+                    <div className="group-data-compact/slides:self-center">
+                      <p className="text-[clamp(16px,1.4vw,21px)] leading-snug max-tab:text-[15px] group-data-compact/slides:text-[13px]">{project.summary}</p>
+                      <p lang="zh-Hant" className="mt-2 text-[clamp(13px,1.1vw,17px)] leading-normal tracking-[0.15em] text-muted-foreground group-data-compact/slides:mt-1.5 group-data-compact/slides:text-xs group-data-compact/slides:tracking-[0.08em]">
+                        {project.summaryTw}
+                      </p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setOpenId(project.id)}
-                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit cursor-pointer items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3"
+                      className="mt-[clamp(14px,2.4vh,26px)] flex w-fit cursor-pointer items-center gap-[15px] rounded-full border border-foreground py-3 pr-3.5 pl-[17px] text-[15px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink max-tab:mt-3 max-phone:hidden group-data-compact/slides:col-span-2 group-data-compact/slides:mt-0 group-data-compact/slides:gap-2.5 group-data-compact/slides:py-2 group-data-compact/slides:pr-3 group-data-compact/slides:pl-3.5 group-data-compact/slides:text-[13px]"
                     >
                       <span>
                         View

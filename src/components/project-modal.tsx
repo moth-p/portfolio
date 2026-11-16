@@ -16,7 +16,7 @@ const pageButton =
   "flex min-w-0 max-w-[calc(50%-48px)] cursor-pointer items-center gap-2.5 rounded-full border border-ink bg-background py-2.5 font-sans text-[15px] font-semibold text-ink transition-colors duration-[250ms] hover:bg-highlight hover:text-ink dark:border-border dark:text-foreground dark:hover:border-ink dark:hover:text-ink max-phone:py-2 max-phone:text-[13px]"
 
 const linkButton =
-  "flex items-center gap-2 rounded-full border border-foreground py-1.5 pr-2.5 pl-3.5 text-[13px] font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink"
+  "flex items-center gap-1.5 rounded-full border border-foreground py-1 pr-2 pl-3 text-xs font-semibold transition-colors duration-[250ms] hover:bg-highlight hover:text-ink"
 
 // A project's case study in a popup, opened from the project cards. Previous / next page through `list` (every
 // project unless given, e.g. only the filtered ones), wrapping around it, in the bar along the bottom. `projectId` is
@@ -40,7 +40,7 @@ export function ProjectModal({
           aria-describedby={undefined}
           className="fixed inset-x-gutter top-1/2 z-50 mx-auto flex h-[min(800px,calc(100svh-2*clamp(16px,4vh,48px)))] max-w-[1040px] -translate-y-1/2 flex-col overflow-hidden rounded-[26px] border border-border bg-background outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-[0.97] data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:zoom-in-[0.97] max-phone:inset-x-3 max-phone:h-[calc(100svh-24px)] max-phone:rounded-[18px]"
         >
-          <div className="flex flex-none items-center justify-between gap-4 border-b border-border px-[clamp(16px,2.4vw,40px)] py-[clamp(12px,1.6vw,20px)]">
+          <div className="flex flex-none items-center justify-between gap-4 border-b border-border px-[clamp(16px,2.4vw,40px)] py-[clamp(12px,1.6vw,20px)] max-phone:px-6">
             <div className="flex min-w-0 items-end gap-[clamp(12px,1.4vw,20px)]">
               <Dialog.Title className="truncate text-[clamp(28px,3vw,44px)] leading-[1.05] font-medium max-phone:text-[clamp(24px,7vw,32px)]">
                 <span key={project?.id} className="animate-in fade-in duration-300">{project?.title}</span>
@@ -62,36 +62,36 @@ export function ProjectModal({
   )
 }
 
-// Two columns: the recording and links on the left, the details on the right. The recording panel grows to
+// Two columns: the recording and its links (if any) on the left, the details on the right. The recording panel grows to
 // make the left column as tall as the right. On tablet and phone they stack, and the body scrolls without showing a
 // scrollbar.
 function ProjectBody({ project }: { project: Project }) {
+  const links = [
+    { name: "GitHub", href: project.github },
+    { name: "Website", href: project.website },
+  ].filter((link): link is { name: string; href: string } => !!link.href)
   return (
     <div
       key={project.id}
-      className="grid min-h-0 flex-1 animate-in fade-in duration-300 grid-cols-12 gap-[clamp(24px,3vw,56px)] overflow-y-auto p-[clamp(16px,2.4vw,40px)] [scrollbar-width:none] max-tab:grid-cols-1 max-tab:gap-6 [&::-webkit-scrollbar]:hidden"
+      className="grid min-h-0 flex-1 animate-in fade-in duration-300 grid-cols-12 gap-[clamp(24px,3vw,56px)] overflow-y-auto p-[clamp(16px,2.4vw,40px)] [scrollbar-width:none] max-tab:auto-rows-max max-tab:grid-cols-1 max-tab:gap-6 max-phone:gap-5 max-phone:px-6 [&::-webkit-scrollbar]:hidden"
     >
-      <div className="col-span-7 flex flex-col gap-[clamp(18px,3vh,32px)] max-tab:col-span-1">
-        <div className="relative min-h-[200px] flex-1 overflow-hidden rounded-[20px] mockup-panel max-tab:aspect-[16/11] max-tab:min-h-0 max-tab:flex-none max-phone:aspect-[4/3.6] max-phone:rounded-[14px]">
-          <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="(max-width: 800px) 100vw, 60vw" preload />
-        </div>
-        {/* A project without the link shows its button greyed out */}
-        <div className="flex gap-2.5">
-          {[
-            { name: "GitHub", href: project.github },
-            { name: "Website", href: project.website },
-          ].map((link) =>
-            link.href ? (
-              <a key={link.name} href={link.href} target="_blank" rel="noreferrer" className={linkButton}>
-                {link.name}
-                <ArrowIcon className="w-3.5 -rotate-45" />
-              </a>
-            ) : (
-              <span key={link.name} aria-disabled="true" className={cn(linkButton, "pointer-events-none opacity-40")}>
-                {link.name}
-                <ArrowIcon className="w-3.5 -rotate-45" />
-              </span>
-            ),
+      {/* On phone the column dissolves into the body's grid, so the recording (and its links) can stay pinned to the
+          top (on the background, edge to edge) while everything below it scrolls */}
+      <div className="col-span-7 flex flex-col max-tab:col-span-1 max-phone:contents">
+        <div className="flex min-h-[200px] flex-1 flex-col gap-[clamp(12px,2vh,20px)] max-tab:min-h-0 max-tab:flex-none max-phone:sticky max-phone:-top-4 max-phone:z-10 max-phone:-mx-6 max-phone:-mt-4 max-phone:gap-2.5 max-phone:bg-background max-phone:px-6 max-phone:pt-4 max-phone:pb-6">
+          <div className="relative min-h-0 flex-1 overflow-hidden rounded-[20px] mockup-panel max-tab:aspect-[16/11] max-tab:flex-none max-phone:rounded-[14px]">
+            <LaptopMockup src={project.image} video={project.video} alt={`${project.title} project`} sizes="(max-width: 800px) 100vw, 60vw" preload />
+          </div>
+          {/* Only the links a project has; most have none, and then the row is left out */}
+          {links.length > 0 && (
+            <div className="flex gap-2">
+              {links.map((link) => (
+                <a key={link.name} href={link.href} target="_blank" rel="noreferrer" className={linkButton}>
+                  {link.name}
+                  <ArrowIcon className="w-3 -rotate-45" />
+                </a>
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -146,12 +146,13 @@ function Pagination({
   list: Project[]
   onSelect: (id: string) => void
 }) {
-  const position = String(list.indexOf(current) + 1).padStart(2, "0")
+  // By id: a list handed down from a server component holds copies, not the same objects as `current`.
+  const position = String(list.findIndex((project) => project.id === current.id) + 1).padStart(2, "0")
   const total = String(list.length).padStart(2, "0")
   return (
     <nav
       aria-label="More projects"
-      className="flex flex-none items-center justify-between gap-4 border-t border-border px-[clamp(16px,2.4vw,40px)] py-[clamp(12px,1.6vw,20px)]"
+      className="flex flex-none items-center justify-between gap-4 border-t border-border px-[clamp(16px,2.4vw,40px)] py-[clamp(12px,1.6vw,20px)] max-phone:px-6"
     >
       <button type="button" onClick={() => onSelect(previous.id)} className={cn(pageButton, "pr-4 pl-3")}>
         <ArrowIcon direction="left" className="w-4 flex-none" />
@@ -160,7 +161,7 @@ function Pagination({
           {previous.title}
         </span>
       </button>
-      <span className="text-[13px] tracking-[0.1em] text-muted-foreground tabular-nums">
+      <span className="flex-none text-[13px] tracking-[0.1em] whitespace-nowrap text-muted-foreground tabular-nums">
         {position} / {total}
       </span>
       <button type="button" onClick={() => onSelect(next.id)} className={cn(pageButton, "pr-3 pl-4")}>

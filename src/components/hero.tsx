@@ -28,6 +28,9 @@ const PROJECT_REST = 0.3
 const SLOGAN_AT = SWITCH_AT + projects.length * PROJECT_STEP
 const SOLVE_LEAD = 0.2
 const SLOGAN_STEP = 1.6
+// On phone the cube solves over this share of that scroll, a little faster, then rests solved until it leaves.
+const PHONE_SOLVE_SHARE = 0.75
+const PHONE_QUERY = "(width < 521px)"
 const FLOW_AT = SLOGAN_AT + SLOGAN_STEP
 // …then the work flow, which reveals one step (and unfolds its brief) per FLOW_STEP, until LINKS_AT, where it fades
 // out and the link section fades in right away with the footer at its bottom. The page ends on that screen,
@@ -198,7 +201,9 @@ export function Hero() {
     lastScrolled.current = scrolled
     started.current = true
     setProjectProgress(restAtProjects(clamp((scrolled - projectScroll(0)) / PROJECT_STEP, projects.length - 1)))
-    setSolveProgress(clamp((scrolled - SLOGAN_AT - SOLVE_LEAD) / (SLOGAN_STEP - 2 * SOLVE_LEAD), 1))
+    const solveSpan =
+      (SLOGAN_STEP - 2 * SOLVE_LEAD) * (window.matchMedia(PHONE_QUERY).matches ? PHONE_SOLVE_SHARE : 1)
+    setSolveProgress(clamp((scrolled - SLOGAN_AT - SOLVE_LEAD) / solveSpan, 1))
     setFlowProgress(clamp((scrolled - flowScroll(0)) / FLOW_STEP, workflowSteps.length - 1))
 
     const previous = currentPhase.current
@@ -413,18 +418,19 @@ export function Hero() {
             <div className="absolute top-1/2 -left-[12%] h-px w-[124%] -rotate-[35deg] bg-border" />
           </div>
           {/* Sits centred in the visible part of the circle (100px = half its width; no translate, since the pet is
-              placed from layout offsets); on tablet and phone it moves above the intro row.
+              placed from layout offsets); on tablet it moves above the intro row, and on phone it sits alone (no energy bar) in the
+              bottom left corner, beside the arrow button, clear of the title.
               The pet itself is drawn outside the panel (see below) so it can walk on; this keeps its spot. */}
           <div
             style={{ animationDelay: `${PET_DELAY_MS}ms` }}
-            className="animate__animated animate__fadeInUp absolute right-[calc(clamp(18px,5vw,90px)+clamp(115px,14vw,210px)-100px)] bottom-[clamp(24px,calc(14vw-110px),100px)] z-[2] flex flex-col items-center gap-5 max-tab:right-gutter max-tab:bottom-[150px] max-phone:bottom-[165px] max-phone:flex-row"
+            className="animate__animated animate__fadeInUp absolute right-[calc(clamp(18px,5vw,90px)+clamp(115px,14vw,210px)-100px)] bottom-[clamp(24px,calc(14vw-110px),100px)] z-[2] flex flex-col items-center gap-5 max-tab:right-gutter max-tab:bottom-[150px] max-phone:right-auto max-phone:bottom-12 max-phone:left-gutter max-phone:flex-row max-phone:items-end max-phone:gap-3"
           >
             <div
               ref={petSpot}
               style={{ aspectRatio: `${PET_WIDTH} / ${PET_HEIGHT}` }}
-              className="w-[120px] max-phone:w-[80px]"
+              className="w-[120px] max-phone:w-[96px]"
             />
-            <PetStatus {...pet} />
+            <PetStatus {...pet} className="max-phone:hidden" />
           </div>
         </section>
 
@@ -470,18 +476,22 @@ export function Hero() {
           <SiteFooter />
         </section>
 
-        {/* Outside the hero it is always awake; it leaves with the work flow */}
+        {/* Outside the hero it is always awake; it leaves with the work flow. On phone the Developing title fills the
+            width, leaving no room beside it, so there the pet hides. */}
         <div
           ref={petRef}
           aria-hidden="true"
-          className="group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-transform duration-[1100ms] ease-in-out motion-reduce:transition-none"
+          className={cn(
+            "group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-transform duration-[1100ms] ease-in-out motion-reduce:transition-none",
+            phase === "projects" && "max-phone:opacity-0",
+          )}
         >
           <div style={{ animationDelay: `${PET_DELAY_MS}ms` }} className="animate__animated animate__fadeInUp">
             <div
               className={cn(
                 (phase === "flow" || phase === "links") && flowMotion !== "enter" && panelClass[flowMotion],
-                // Beside the work flow title, it leaves with the left half.
-                flowMotion === "out-sides" && "animate__animated animate__fadeOutLeft",
+                // Beside the work flow title, it leaves with the left half (upwards on phone, like the chart).
+                flowMotion === "out-sides" && "animate__animated animate__fadeOutLeft max-phone:[animation-name:fadeOutUp]!",
               )}
             >
               <PetSprite mood={phase === "hero" ? pet.mood : "awake"} hopping={pet.hopping} />
