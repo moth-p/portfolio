@@ -3,7 +3,6 @@ import Link from "next/link"
 import { HomeLink } from "@/components/home-link"
 import { PixelText } from "@/components/pixel-icons"
 import { PetIcon } from "@/components/pixel-pet"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 const navLink = "link-underline py-2.5 text-[13px]"
 
@@ -35,9 +34,8 @@ export function SiteHeader({
           </Link>
         ))}
       </nav>
-      <div className="flex items-center gap-[22px] justify-self-end max-tab:ml-5 max-phone:ml-3">
-        <ThemeToggle />
-      </div>
+      {/* Empty right column keeps the nav centred; the theme toggle is hidden while the site is light-only */}
+      <div className="flex items-center gap-[22px] justify-self-end max-tab:ml-5 max-phone:ml-3" />
     </header>
   )
 }
