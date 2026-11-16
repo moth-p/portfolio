@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 // The audience filter is a single choice: "All" shows every project, the others keep the projects built for that
 // audience — enterprise back offices (企業後台) or consumer-facing sites (前台).
 const filters: { value: Filter; label: string; labelTw?: string }[] = [
-  { value: "all", label: "All" },
+  { value: "all", label: "All", labelTw: "全部" },
   { value: "enterprise", label: "Enterprise", labelTw: "企業後台" },
   { value: "consumer", label: "Consumer", labelTw: "前台" },
 ]

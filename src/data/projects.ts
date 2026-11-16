@@ -239,7 +239,7 @@ export const projects: Project[] = [
     description:
       "A weather card for Taiwan built on the Central Weather Administration's open data API. Pick an area from the dropdown and the card fetches its current forecast, presented with pixel type, a speech bubble and a playful 3D flower character.",
     descriptionTw:
-      "串接中央氣象署開放資料 API 的台灣天氣卡片。從下拉選單選擇縣市即可取得當地天氣預報，搭配像素字體、對話泡泡與 3D 花朵角色呈現。",
+      "串接中央氣象署開放資料 API 的台灣天氣卡片。從下拉選單選擇縣市即可取得當地天氣預報。",
     image: "/projects/weather-card/cover.png",
     video: "/projects/weather-card/preview.mp4",
     color: "#3d3d3d",
