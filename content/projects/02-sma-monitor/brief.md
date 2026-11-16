@@ -14,7 +14,7 @@ Single-page dashboard for monitoring IoT equipment in a warehouse facility. An i
 ## Tech Stack
 | Concern | Choice |
 |---|---|
-| Framework | React 19 + TypeScript 5.9 *(currently migrating from Vue 3 — uncommitted)* |
+| Framework | React 19 + TypeScript 5.9 *(currently migrating from Vue — uncommitted)* |
 | Build | Vite 7 |
 | Routing | React Router 7 (hash history) |
 | Styling | Tailwind CSS 3.4 + tailwindcss-animate, CSS-variable design tokens |

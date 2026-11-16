@@ -276,6 +276,20 @@ export function Hero() {
     }
   }, [sync])
 
+  // The title's difference blend would also blend the selection highlight into a dark patch, so while any of
+  // the title is selected, drop the blend (data-selected) and let the global light yellow ::selection show.
+  useEffect(() => {
+    const title = document.getElementById("hero-title")
+    if (!title) return
+    const update = () => {
+      const selection = document.getSelection()
+      const selected = !!selection && !selection.isCollapsed && selection.containsNode(title, true)
+      title.toggleAttribute("data-selected", selected)
+    }
+    document.addEventListener("selectionchange", update)
+    return () => document.removeEventListener("selectionchange", update)
+  }, [])
+
   // Move the pet to the current phase's spot. The move itself is a CSS transition; while it runs the
   // pet walks, facing the way it goes.
   useEffect(() => {
@@ -367,7 +381,7 @@ export function Hero() {
             <FadeInUp
               as="h1"
               id="hero-title"
-              className="relative z-[2] max-w-[900px] text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium text-white mix-blend-difference dark:text-highlight dark:mix-blend-normal max-tab:text-[clamp(58px,10.5vw,84px)] max-phone:text-[clamp(40px,13vw,68px)]"
+              className="relative z-[2] max-w-[900px] text-[clamp(58px,8.1vw,124px)] leading-[0.89] font-medium text-white mix-blend-difference data-[selected]:text-ink data-[selected]:mix-blend-normal dark:text-highlight dark:mix-blend-normal dark:data-[selected]:text-highlight max-tab:text-[clamp(58px,10.5vw,84px)] max-phone:text-[clamp(40px,13vw,68px)]"
             >
               Shape ideas into digital
               experiences.

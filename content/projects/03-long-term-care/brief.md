@@ -24,4 +24,4 @@ Dashboard for UARK, a company that owns several (<10) long-term care institution
 | Lint | ESLint |
 
 ## Related: UARK IBMS (production frontend)
-`ibms-uark-web` is the real-backend version: Vue 3 + TypeScript SPA (being migrated to React 19, both coexisting), Autodesk Forge 3D floor models for bed status, Zustand, ECharts, FullCalendar, Leaflet/MapLibre, Tailwind v4, Vitest, multi-tenant/multi-brand, deployed as an Nginx Docker image with runtime config.
+`ibms-uark-web` is the real-backend version: Vue + TypeScript SPA (being migrated to React 19, both coexisting), Autodesk Forge 3D floor models for bed status, Zustand, ECharts, FullCalendar, Leaflet/MapLibre, Tailwind v4, Vitest, multi-tenant/multi-brand, deployed as an Nginx Docker image with runtime config.

@@ -89,9 +89,9 @@ export function Projects({
             </span> <ArrowIcon className="w-4" />
           </Link>
         </div>
-        <p lang="zh-Hant" className="mt-[clamp(14px,1.6vw,22px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground">
+        {/* <p lang="zh-Hant" className="mt-[clamp(14px,1.6vw,22px)] text-[clamp(16px,1.4vw,20px)] leading-normal tracking-[0.15em] text-muted-foreground">
           開發 IOT 設備監控介面與品牌形象網站。
-        </p>
+        </p> */}
       </div>
 
       {/*
