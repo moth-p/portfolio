@@ -1,0 +1,9 @@
+{
+  // Cloudflare Workers static assets: serves the `next build` static export in `out/`
+  "name": "portfolio",
+  "compatibility_date": "2026-11-16",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
