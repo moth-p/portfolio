@@ -5,24 +5,29 @@ import { useEffect, useRef, useState } from "react"
 import { LaptopMockup } from "@/components/laptop-mockup"
 import { PixelText } from "@/components/pixel-icons"
 import { ProjectModal } from "@/components/project-modal"
-import type { Project } from "@/data/projects"
+import type { Audience, Project } from "@/data/projects"
 import { cn } from "@/lib/utils"
 
 // The Projects page grid. Cards fade up like the page title (FadeInUp): Animate.css timing, each row 120ms after the
 // one above, played when a card scrolls into view and replayed the next time. They rise by about the title's line
 // height rather than their own height.
-// The framework filter is a single choice: "All" shows every project, a framework keeps the projects built with it.
-const filters = ["All", "Next.js", "React"] as const
-type Filter = (typeof filters)[number]
+// The audience filter is a single choice: "All" shows every project, the others keep the projects built for that
+// audience — enterprise back offices (企業後台) or consumer-facing sites (前台).
+const filters: { value: Filter; label: string; labelTw?: string }[] = [
+  { value: "all", label: "All" },
+  { value: "enterprise", label: "Enterprise", labelTw: "企業後台" },
+  { value: "consumer", label: "Consumer", labelTw: "前台" },
+]
+type Filter = "all" | Audience
 
 export function ProjectGrid({ projects }: { projects: Project[] }) {
   const list = useRef<HTMLUListElement>(null)
   // Delay (ms) of each card currently in view; cards not in it are hidden, ready to play again.
   const [shown, setShown] = useState<Record<string, number>>({})
-  const [filter, setFilter] = useState<Filter>("All")
+  const [filter, setFilter] = useState<Filter>("all")
   const [openId, setOpenId] = useState<string | null>(null)
 
-  const visible = filter === "All" ? projects : projects.filter((project) => project.techStack.includes(filter))
+  const visible = filter === "all" ? projects : projects.filter((project) => project.audience === filter)
   const visibleKey = visible.map((project) => project.id).join(" ")
 
   // Cards are re-observed after a filter change, so all of them fade up again in their new places.
@@ -63,18 +68,23 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   return (
     <>
       <fieldset className="mt-[clamp(24px,4vh,44px)] flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px]">
-        <legend className="sr-only">Filter by framework</legend>
+        <legend className="sr-only">Filter by audience</legend>
         {filters.map((option) => (
-          <label key={option} className="flex cursor-pointer items-center gap-2.5 select-none">
+          <label key={option.value} className="flex cursor-pointer items-center gap-2.5 select-none">
             <input
               type="radio"
-              name="framework"
-              value={option}
-              checked={filter === option}
-              onChange={() => select(option)}
+              name="audience"
+              value={option.value}
+              checked={filter === option.value}
+              onChange={() => select(option.value)}
               className="size-4 cursor-pointer accent-foreground"
             />
-            {option}
+            {option.label}
+            {option.labelTw && (
+              <span lang="zh-Hant" className="tracking-[0.08em] text-muted-foreground">
+                {option.labelTw}
+              </span>
+            )}
           </label>
         ))}
       </fieldset>
