@@ -42,7 +42,7 @@ export const projects: Project[] = [
     description:
       "A device monitoring interface that pairs an interactive 3D building model with live metric charts. Device popovers stay anchored as the camera orbits, so an operator sees both where equipment sits and how it performs on one screen.",
     descriptionTw:
-      "農業 IoT 監控系統，設備資訊卡會隨鏡頭旋轉固定在設備位置上，讓操作人員在同一個畫面中同時掌握設備位置與運作狀況。",
+      "農業 IoT 監控系統，結合 3D 建築模型與即時設備數據圖表以掌握設備位置與運作狀況。",
     image: "/projects/sma-monitor/cover-v2.png",
     video: "/projects/sma-monitor/preview-v2.mp4",
     color: "#cccccc",
@@ -75,7 +75,7 @@ export const projects: Project[] = [
     image: "/projects/long-term-care/cover-map.png",
     video: "/projects/long-term-care/preview-map.mp4",
     color: "#d9d8d5",
-    techStack: ["React", "TypeScript", "Vite", "Redux Toolkit", "React Router", "Tailwind CSS", "shadcn/ui", "Leaflet", "Recharts", "ESLint"],
+    techStack: ["React", "TypeScript", "Vite", "Redux Toolkit", "React Router", "Axios", "Tailwind CSS", "shadcn/ui", "Leaflet", "Recharts", "ESLint"],
     duties: [
       "Worked with the PM and backend engineers to define requirements and API contracts",
       "Designed the UI/UX, from user flows and wireframes to the final interface",
@@ -135,7 +135,7 @@ export const projects: Project[] = [
     image: "/projects/iot-monitor/cover-v2.png",
     video: "/projects/iot-monitor/preview-v2.mp4",
     color: "#d2d2d6",
-    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "three.js", "ESLint"],
+    techStack: ["React", "TypeScript", "Vite", "Zustand", "React Router", "Axios", "Tailwind CSS", "shadcn/ui", "MapLibre GL", "three.js", "ESLint"],
     duties: [
       "Worked with the PM and backend engineers to define requirements and API contracts",
       "Designed the UI/UX, from user flows and wireframes to the final interface",
@@ -164,7 +164,7 @@ export const projects: Project[] = [
     image: "/projects/gamehub/cover-grid.png",
     video: "/projects/gamehub/preview-collect.mp4",
     color: "#787878",
-    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "ESLint"],
+    techStack: ["Next.js", "TypeScript", "Axios", "Tailwind CSS", "shadcn/ui", "ESLint"],
     duties: [
       "A personal side project: designed the UI/UX and built the whole frontend on my own",
       "Built the pixel-art interface with Tailwind CSS and shadcn/ui",
@@ -191,7 +191,7 @@ export const projects: Project[] = [
     image: "/projects/cvilux/cover.png",
     video: "/projects/cvilux/preview.mp4",
     color: "#2b333d",
-    techStack: ["Vue", "Pinia", "Vite", "Tailwind CSS", "Autodesk Forge"],
+    techStack: ["Vue", "Pinia", "Axios", "Vite", "Tailwind CSS", "Autodesk Forge"],
     duties: [
       "Maintained and debugged the existing Vue codebase",
       "Added and adjusted small features as new requirements came in",
@@ -269,7 +269,7 @@ export const projects: Project[] = [
     image: "/projects/ils/cover.png",
     video: "/projects/ils/preview.mp4",
     color: "#e4e6ea",
-    techStack: ["Vue", "Pinia", "Vite", "Tailwind CSS", "Leaflet", "ECharts"],
+    techStack: ["Vue", "Pinia", "Axios", "Vite", "Tailwind CSS", "Leaflet", "ECharts"],
     duties: [
       "Maintained and debugged the existing Vue codebase",
       "Added and adjusted small features as new requirements came in",

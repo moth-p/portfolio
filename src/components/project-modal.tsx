@@ -119,7 +119,7 @@ function ProjectBody({ project }: { project: Project }) {
           <span className={cn(label, "text-muted-foreground")}>
             My role<span lang="zh-Hant" className={labelTw}>負責項目</span>
           </span>
-          <ul lang="zh-Hant" className="mt-2.5 flex flex-col gap-1.5 text-sm leading-snug tracking-[0.08em]">
+          <ul lang="zh-Hant" className="mt-2.5 flex flex-col gap-1.5 text-sm leading-snug max-phone:text-[13px] tracking-[0.08em]">
             {project.dutiesTw.map((duty) => (
               <li key={duty} className="flex gap-2.5">
                 <span aria-hidden="true" className="mt-[0.55em] size-1.5 flex-none rounded-full bg-highlight" />

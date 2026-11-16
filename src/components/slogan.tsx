@@ -84,15 +84,24 @@ export function Slogan({
         </div>
         {/* The pet's spot, standing at the cube's right side; the pet itself is drawn by the hero */}
         <div
-          id="slogan-pet-spot"
+          data-pet-spot="slogan"
           style={{ aspectRatio: `${PET_WIDTH} / ${PET_HEIGHT}` }}
-          className="absolute bottom-[-12%] left-[calc(100%+clamp(44px,8vw,120px))] w-[clamp(64px,7vw,100px)] max-phone:bottom-[-8%] max-phone:left-[calc(100%+8px)] max-phone:w-[52px]"
+          className="absolute bottom-[-12%] left-[calc(100%+clamp(44px,8vw,120px))] w-[clamp(64px,7vw,100px)] max-phone:hidden"
         />
       </div>
 
-      <span style={delay(2)} className={cn(wordClass, motionClass[motion])}>
-        Provider
-      </span>
+      <div className="relative">
+        <span style={delay(2)} className={cn(wordClass, motionClass[motion])}>
+          Provider
+        </span>
+        {/* On phone the cube nearly fills the width, so the pet stands under the word's right end instead, clear of
+            both the word and the screen edge */}
+        <div
+          data-pet-spot="slogan"
+          style={{ aspectRatio: `${PET_WIDTH} / ${PET_HEIGHT}` }}
+          className="absolute top-[calc(100%+clamp(14px,2.6vh,24px))] right-[0.3em] hidden w-[48px] max-phone:block"
+        />
+      </div>
     </div>
   );
 }

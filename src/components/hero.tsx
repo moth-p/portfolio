@@ -93,15 +93,20 @@ const STOP_HOLD_MAX_MS = 800
 const TITLE_MS = 1100
 const PET_DELAY_MS = TITLE_MS
 
-// The pet walks from its hero spot to the right of each section title, and in the slogan to its own spot beside
-// the cube.
-const PET_TITLE = {
-  projects: "projects-pet-spot",
-  slogan: "slogan-pet-spot",
+// The pet hides over the project list, then walks from its hero spot to beside the slogan's cube, then to the right
+// of the work flow title. A spot (data-pet-spot) is filled by the pet; a title has the pet stand just right of it.
+// A section may hold one spot per layout; the one shown is used.
+const PET_TARGET: Partial<Record<Phase, string>> = {
+  slogan: "slogan",
   flow: "workflow-title",
   links: "workflow-title",
-} as const
-const SLOGAN_PET_SPOT = "slogan-pet-spot"
+}
+
+function findPetTarget(name: string) {
+  const candidates = document.querySelectorAll<HTMLElement>(`[data-pet-spot="${name}"], #${name}`)
+  return Array.from(candidates).find((element) => element.offsetWidth > 0) ?? null
+}
+
 // Next to a title the pet stands on the baseline and is about as tall as the capitals.
 const PET_TITLE_HEIGHT = 0.78
 const PET_TITLE_GAP = 0.3
@@ -302,13 +307,14 @@ export function Hero() {
     if (!element) return
     const place = (animate: boolean) => {
       const container = stage.current
-      const target = phase === "hero" ? petSpot.current : document.getElementById(PET_TITLE[phase])
+      const name = PET_TARGET[phase]
+      const target = phase === "hero" ? petSpot.current : name ? findPetTarget(name) : null
       if (!container || !target) return
       const { x: left, y: top } = offsetWithin(target, container)
       let x = left
       let y = top
       let scale = target.offsetWidth / PET_WIDTH
-      if (phase !== "hero" && target.id !== SLOGAN_PET_SPOT) {
+      if (phase !== "hero" && target.dataset.petSpot === undefined) {
         const height = target.offsetHeight
         scale = (height * PET_TITLE_HEIGHT) / PET_HEIGHT
         x = left + target.offsetWidth + height * PET_TITLE_GAP
@@ -476,14 +482,13 @@ export function Hero() {
           <SiteFooter />
         </section>
 
-        {/* Outside the hero it is always awake; it leaves with the work flow. On phone the Developing title fills the
-            width, leaving no room beside it, so there the pet hides. */}
+        {/* Outside the hero it is always awake; it leaves with the work flow. It hides (in place) over the project list. */}
         <div
           ref={petRef}
           aria-hidden="true"
           className={cn(
-            "group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-transform duration-[1100ms] ease-in-out motion-reduce:transition-none",
-            phase === "projects" && "max-phone:opacity-0",
+            "group pointer-events-none absolute top-0 left-0 z-[3] origin-top-left transition-[transform,opacity] duration-[1100ms] ease-in-out motion-reduce:transition-none",
+            phase === "projects" && "opacity-0",
           )}
         >
           <div style={{ animationDelay: `${PET_DELAY_MS}ms` }} className="animate__animated animate__fadeInUp">

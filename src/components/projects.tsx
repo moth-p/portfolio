@@ -71,9 +71,8 @@ export function Projects({
 
   return (
     <div className="flex h-svh flex-col px-gutter pt-[calc(var(--spacing-header)+clamp(28px,7vh,90px))] pb-[clamp(24px,5vh,56px)] max-tab:pt-[calc(var(--spacing-header)+clamp(20px,4vh,44px))]">
-      {/* The pet walks to just right of the title and button row (projects-pet-spot), so it never covers the button */}
       <div className={cn("mb-[clamp(20px,4vh,44px)]", motionClass[motion])}>
-        <div id="projects-pet-spot" className="flex w-fit items-center gap-[clamp(14px,1.6vw,24px)]">
+        <div className="flex w-fit items-center gap-[clamp(14px,1.6vw,24px)]">
           <h2
             id="projects-title"
             className="text-[clamp(44px,5.4vw,84px)] leading-[0.89] font-medium max-phone:text-[clamp(40px,12vw,56px)]"
